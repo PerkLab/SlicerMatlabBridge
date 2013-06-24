@@ -12,8 +12,8 @@ params.unnamed={};
 curArgName='';
 curArgValue='';
 for curArgIndex=1:length(args)
-    if (args{curArgIndex}(1)=='-')
-        % This is an argument name
+    if (regexp(args{curArgIndex},'^-[-]?[a-zA-Z]')==1)
+        % This is an argument name (as it starts with - or -- followed by letters)
         if (~isempty(curArgName))
             % There is an argument already, so store it
             params.(curArgName)=curArgValue;
