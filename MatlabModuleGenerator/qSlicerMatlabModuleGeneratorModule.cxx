@@ -100,7 +100,7 @@ QIcon qSlicerMatlabModuleGeneratorModule::icon()const
 //-----------------------------------------------------------------------------
 QStringList qSlicerMatlabModuleGeneratorModule::categories() const
 {
-  return QStringList() << "Matlab";
+  return QStringList() << "Developer Tools.Matlab";
 }
 
 //-----------------------------------------------------------------------------
