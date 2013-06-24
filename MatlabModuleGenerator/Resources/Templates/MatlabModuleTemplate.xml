@@ -9,8 +9,8 @@
   <contributor>Andras Lasso (PerkLab)</contributor>
   <acknowledgements><![CDATA[SparKit is a project funded by Cancer Care Ontarioand the Ontario Consortium for Adaptive Interventions in Radiation Oncology (OCAIRO) to provide free, open-source toolset for radiotherapy and related image-guided interventions.]]></acknowledgements>
   <parameters>
-    <label>Median Filter Parameters</label>
-    <description><![CDATA[Parameters for the median filter]]></description>
+    <label>Processing Parameters</label>
+    <description><![CDATA[Parameters for the processing]]></description>
     <integer>
       <name>threshold</name>
       <longflag>--threshold</longflag>
@@ -18,18 +18,11 @@
       <label>Threshold</label>
       <default>50</default>
       <constraints>
-        <minimum>0</minimum>
-        <maximum>500</maximum>
+        <minimum>-2000</minimum>
+        <maximum>5000</maximum>
         <step>5</step>
       </constraints>      
     </integer>
-    <integer-vector>
-      <name>neighborhood</name>
-      <longflag>--neighborhood</longflag>
-      <description><![CDATA[The size of the neighborhood in each dimension]]></description>
-      <label>Neighborhood Size</label>
-      <default>1,1,1</default>
-    </integer-vector>    
   </parameters>
   <parameters>
     <label>IO</label>

@@ -33,7 +33,7 @@
 #include "qSlicerMatlabModuleGeneratorModule.h"
 #include "qSlicerMatlabModuleGeneratorModuleWidget.h"
 
-const std::string MATLAB_COMMAND_SERVER_SCRIPT_NAME="commandserver.m";
+const std::string MATLAB_COMMAND_SERVER_SCRIPT_NAME="cli_commandserver.m";
 
 //-----------------------------------------------------------------------------
 Q_EXPORT_PLUGIN2(qSlicerMatlabModuleGeneratorModule, qSlicerMatlabModuleGeneratorModule);
