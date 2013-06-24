@@ -1,7 +1,7 @@
 
 #-----------------------------------------------------------------------------
 set(MODULE_NAME MatlabModuleGenerator)
-set(MODULE_TITLE ${MODULE_NAME})
+set(MODULE_TITLE "Matlab Module Generator")
 
 string(TOUPPER ${MODULE_NAME} MODULE_NAME_UPPER)
 

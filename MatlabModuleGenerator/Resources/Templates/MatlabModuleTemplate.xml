@@ -2,9 +2,9 @@
 <executable>
   <category>Matlab</category>
   <title>MatlabModuleTemplate</title>
-  <description><![CDATA[Test transfer of all parameter types to/from Matlab.]]></description>
+  <description><![CDATA[Perform a simple image processing and image statistics computation in Matlab.]]></description>
   <version>0.0.0.1</version>
-  <documentation-url>http://www.slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/SlicerRT</documentation-url>
+  <documentation-url>http://www.slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/MatlabBridge</documentation-url>
   <license/>
   <contributor>Andras Lasso (PerkLab)</contributor>
   <acknowledgements><![CDATA[SparKit is a project funded by Cancer Care Ontarioand the Ontario Consortium for Adaptive Interventions in Radiation Oncology (OCAIRO) to provide free, open-source toolset for radiotherapy and related image-guided interventions.]]></acknowledgements>
