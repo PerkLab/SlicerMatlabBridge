@@ -26,12 +26,18 @@
 
 // STD includes
 #include <cassert>
+#include <algorithm> // for std::remove
 
 // Slicer includes
 #include "vtkSlicerConfigure.h" // For Slicer_CLIMODULES_SUBDIR
 
 static const std::string TEMPLATE_NAME="MatlabModuleTemplate";
-static const std::string MODULE_PROXY_TEMPLATE_EXTENSION=".bat";
+/* Define case insensitive string compare for all supported platforms. */
+#if defined( _WIN32 ) && !defined(__CYGWIN__)
+  static const std::string MODULE_PROXY_TEMPLATE_EXTENSION=".bat";
+#else
+  static const std::string MODULE_PROXY_TEMPLATE_EXTENSION=".sh";
+#endif
 static const std::string MODULE_SCRIPT_TEMPLATE_EXTENSION=".m";
 static const std::string MODULE_DEFINITION_TEMPLATE_EXTENSION=".xml";
 
@@ -118,29 +124,36 @@ const char* vtkSlicerMatlabModuleGeneratorLogic
 
 //---------------------------------------------------------------------------
 vtkStdString vtkSlicerMatlabModuleGeneratorLogic
-::GenerateModule(const char* moduleName)
+::GenerateModule(const char* inputModuleName)
 {  
   vtkStdString overallResult;
+
+  std::string fullModuleName=inputModuleName; // module name, including spaces  
+  std::string moduleNameNoSpaces=inputModuleName; // module name without spaces
+  moduleNameNoSpaces.erase(std::remove(moduleNameNoSpaces.begin(), moduleNameNoSpaces.end(), ' '), moduleNameNoSpaces.end());
 
   vtkStdString result;
   bool success=true;
 
+  // Proxy .bat or .sh file
   if (!CreateFileFromTemplate(this->GetModuleShareDirectory()+"/"+TEMPLATE_NAME+MODULE_PROXY_TEMPLATE_EXTENSION,
-    std::string(this->GetMatlabScriptDirectory())+"/"+moduleName+MODULE_PROXY_TEMPLATE_EXTENSION, TEMPLATE_NAME, moduleName, result))
+    std::string(this->GetMatlabScriptDirectory())+"/"+moduleNameNoSpaces+MODULE_PROXY_TEMPLATE_EXTENSION, TEMPLATE_NAME, moduleNameNoSpaces, result))
   {
     success=false;
   }
   overallResult+=result+"\n";
   
+  // Matlab .m file
   if (!CreateFileFromTemplate(this->GetModuleShareDirectory()+"/"+TEMPLATE_NAME+MODULE_SCRIPT_TEMPLATE_EXTENSION,
-    std::string(this->GetMatlabScriptDirectory())+"/"+moduleName+MODULE_SCRIPT_TEMPLATE_EXTENSION, TEMPLATE_NAME, moduleName, result))
+    std::string(this->GetMatlabScriptDirectory())+"/"+moduleNameNoSpaces+MODULE_SCRIPT_TEMPLATE_EXTENSION, TEMPLATE_NAME, moduleNameNoSpaces, result))
   {
     success=false;
   }
   overallResult+=result+"\n";
 
+  // Module description .xml file
   if (!CreateFileFromTemplate(this->GetModuleShareDirectory()+"/"+TEMPLATE_NAME+MODULE_DEFINITION_TEMPLATE_EXTENSION,
-    std::string(this->GetMatlabScriptDirectory())+"/"+moduleName+MODULE_DEFINITION_TEMPLATE_EXTENSION, TEMPLATE_NAME, moduleName, result))
+    std::string(this->GetMatlabScriptDirectory())+"/"+moduleNameNoSpaces+MODULE_DEFINITION_TEMPLATE_EXTENSION, TEMPLATE_NAME, fullModuleName, result))
   {
     success=false;
   }
