@@ -13,5 +13,5 @@ fi
 cd "$( dirname "$0" )"
 
 # Forward parameters to the Matlab CLI
-$SLICER_HOME/Slicer --launcher-no-splash --launch MatlabCommander --call-matlab-function $MODULE_NAME $*
+"$SLICER_HOME/Slicer" --launcher-no-splash --launch MatlabCommander --call-matlab-function $MODULE_NAME $*
 exit $?
