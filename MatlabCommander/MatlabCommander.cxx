@@ -244,10 +244,10 @@ ExecuteMatlabCommandStatus ExecuteMatlabCommand(const std::string& hostname, int
         std::cerr << "Waiting for Matlab startup ... " << retryAttempts << "sec" << std::endl;
       }
     }
-  }
-  else
-  {
-    std::cerr << "Failed to start Matlab process" << std::endl;
+    else
+    {
+      std::cerr << "Failed to start Matlab process" << std::endl;
+    }
   }
   if (connectErrorCode != 0)
   {        
@@ -383,6 +383,13 @@ int CallMatlabFunction(int argc, char * argv [])
   if (status!=COMMAND_STATUS_SUCCESS)
   {
     std::cerr << "ERROR: " << reply << std::endl;
+    return EXIT_FAILURE;
+  }
+  if (reply.compare("OK")!=0)
+  {
+    // reply is not OK
+    std::cerr << "Failed to execute Matlab function: " << functionName << ", received the following error message: " << std::endl;
+    std::cerr << reply << std::endl;
     return EXIT_FAILURE;
   }
 
