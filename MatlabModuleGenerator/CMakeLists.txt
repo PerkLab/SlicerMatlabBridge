@@ -66,10 +66,15 @@ endif()
 
 #-----------------------------------------------------------------------------
 set(TEMPLATE_FILES
-  MatlabModuleTemplate.bat
   MatlabModuleTemplate.m
   MatlabModuleTemplate.xml 
   )
+
+IF (WIN32)
+  set(TEMPLATE_FILES ${TEMPLATE_FILES} MatlabModuleTemplate.bat)
+ELSE()
+  set(TEMPLATE_FILES ${TEMPLATE_FILES} MatlabModuleTemplate.sh)
+ENDIF() 
 
 foreach(TEMPLATE_FILE ${TEMPLATE_FILES})
   configure_file(
