@@ -42,13 +42,12 @@ endif()
 
 #-----------------------------------------------------------------------------
 
-set(SCRIPT_FILES
-  cli_commandserver.m 
-  cli_argsread.m 
-  cli_argswrite.m
-  cli_imageread.m 
-  cli_imagewrite.m 
-  )
+# Copy (and install) al cli_*.m script files
+
+file(GLOB SCRIPT_FILES 
+  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/Scripts"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Scripts/CLI_*.m"
+	) 
 
 foreach(SCRIPT_FILE ${SCRIPT_FILES})
   configure_file(
