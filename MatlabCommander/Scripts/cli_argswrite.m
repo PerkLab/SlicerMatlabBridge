@@ -14,7 +14,14 @@ fields = fieldnames(args);
 for i=1:numel(fields)
   fprintf(fid,fields{i});
   fprintf(fid,' = ');
-  fprintf(fid,num2str(argsCellArr{i}));
+  % Print as a row vector (scalar vectors are not written correctly if they are stored in a column vector)
+  [valueRows valueColumns]=size(argsCellArr{i});
+  if (valueRows==1)
+      value=argsCellArr{i};
+  else
+      value=argsCellArr{i}';
+  end
+  fprintf(fid,num2str(value));
   fprintf(fid,'\n');
 end
 

@@ -56,6 +56,8 @@ function updatedArgs=fixupArgumentList(originalArgs)
             argValue=matchedTokens{1}{2}; % '12.3,14.6,18.7'
             % Insert the split argName and argValue in the argument list
             updatedArgs=[updatedArgs {argName} {argValue}];
+        else
+            updatedArgs=[updatedArgs {originalArgs{curArgIndex}}];
         end
     end
 end
