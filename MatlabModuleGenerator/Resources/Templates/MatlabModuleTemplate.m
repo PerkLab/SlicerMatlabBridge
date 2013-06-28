@@ -19,14 +19,16 @@ img.pixelData=(double(img.pixelData)>inputParams.threshold)*100;
 
 cli_imagewrite(inputParams.unnamed{2}, img);
 
-%% Help
+%% Help for reading/writing parameters
 %
 % Reading input parameters
 %
-%  integer, integer-vector, float, float-vector, double, double-vector, string, string-enumeration, file, point:
+%  integer, integer-vector, float, float-vector, double, double-vector, string, string-enumeration, file:
 %    value=inputParams.name;
 %  string-vector:
 %    value=cli_stringvectordecode(inputParams.name);
+%  point-vector:
+%    value=cli_pointvectordecode(inputParams.name);
 %  boolean:
 %    value=isfield(inputParams,'name');
 %  image:

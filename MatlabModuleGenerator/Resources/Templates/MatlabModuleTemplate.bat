@@ -2,7 +2,7 @@
 @rem MatlabBridge proxy version: 1.0
 
 @echo off
-if not "%1"=="--xml" goto :launch_module
+if not "%~1"=="--xml" goto :launch_module
 
 :print_xml
 rem Print CLI descriptor XML
