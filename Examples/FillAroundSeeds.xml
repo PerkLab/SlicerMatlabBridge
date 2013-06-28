@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Matlab</category>
+  <title>FillAroundSeeds</title>
+  <description><![CDATA[Example function for filling the image with a selected intensity around the chosen seed points]]></description>
+  <version>0.0.0.1</version>
+  <documentation-url>http://www.slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/MatlabBridge</documentation-url>
+  <license/>
+  <contributor>Andras Lasso (PerkLab)</contributor>
+  <acknowledgements><![CDATA[SparKit is a project funded by Cancer Care Ontarioand the Ontario Consortium for Adaptive Interventions in Radiation Oncology (OCAIRO) to provide free, open-source toolset for radiotherapy and related image-guided interventions.]]></acknowledgements>
+  <parameters>
+    <label>Processing Parameters</label>
+    <description><![CDATA[Parameters for the processing]]></description>
+    <point multiple="true" coordinateSystem="ras">
+      <name>seed</name>
+      <longflag>--seed</longflag>      
+      <label>Seeds</label>
+      <description><![CDATA[Lists of points in the CLI correspond to slicer fiducial lists]]></description>
+      <default>0,0,0</default>
+    </point>
+    <integer>
+      <name>fillvalue</name>
+      <longflag>--fillvalue</longflag>
+      <description><![CDATA[Voxels around the seed points will be set to this value]]></description>
+      <label>Fill value</label>
+      <default>500</default>
+      <constraints>
+        <minimum>-1000</minimum>
+        <maximum>1000</maximum>
+        <step>5</step>
+      </constraints>      
+    </integer>
+    <float>
+      <name>radius</name>
+      <longflag>--radius</longflag>
+      <description><![CDATA[Voxels around the seed points will be set to this value]]></description>
+      <label>Fill radius (mm)</label>
+      <default>5</default>
+      <constraints>
+        <minimum>0.5</minimum>
+        <maximum>50</maximum>
+        <step>0.5</step>
+      </constraints>      
+    </float>    
+  </parameters>
+  <parameters>
+    <label>IO</label>
+    <description><![CDATA[Input/output parameters]]></description>
+    <image>
+      <name>inputVolume</name>
+      <label>Input Volume</label>
+      <channel>input</channel>
+      <index>0</index>
+      <description><![CDATA[Input volume to be filtered]]></description>
+    </image>
+    <image>
+      <name>outputVolume</name>
+      <label>Output Volume</label>
+      <channel>output</channel>
+      <index>1</index>
+      <description><![CDATA[Output filtered]]></description>
+    </image>
+  </parameters>
+</executable>

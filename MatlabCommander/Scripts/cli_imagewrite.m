@@ -26,8 +26,6 @@ end
 
 fprintf(fid,'\n');
 
-% Convert pixel data from MATLAB's order to NRRD order
-img.pixelData = permute(img.pixelData, [2 1 3]);
 % Write pixel data
 if (isfield(img.metaData,'type'))
   % data type is specified in the metadata => convert the pixel data to that

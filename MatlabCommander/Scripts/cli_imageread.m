@@ -1,6 +1,11 @@
 function img = cli_imageread(filename)
 %cli_imageread  Read images for the command-line interface module from file (in NRRD format, see http://teem.sourceforge.net/nrrd/format.html)
 %   img = cli_imageread(filename) reads the image volume and associated
+%
+%   img.pixelData: pixel data array
+%   img.ijkToLpsTransform: pixel (IJK) to physical (LPS) coordinate system transformation, the origin of the IJK coordinate system is (1,1,1) to match Matlab matrix indexing
+%   img.metaData: contains all the metainformation in the image header
+% 
 %   Current limitations/caveats:
 %   * "Block" datatype is not supported.
 %   * Only tested with "gzip" and "raw" file encodings.
@@ -81,11 +86,16 @@ assert(numel(dims) == ndims);
 data = readData(fid, img.metaData, datatype);
 data = adjustEndian(data, img.metaData);
 
-% Reshape and get into MATLAB's order.
 img.pixelData = reshape(data, dims');
-img.pixelData = permute(img.pixelData, [2 1 3]);
 
-
+% For convenience, compute the transformation matrix between physical and pixel coordinates
+axes_directions=reshape(sscanf(img.metaData.space_directions,'(%f,%f,%f) (%f,%f,%f) (%f,%f,%f)'),3,3);
+axes_origin=sscanf(img.metaData.space_origin,'(%f,%f,%f)');
+ijkZeroBasedToLpsTransform=[[axes_directions, axes_origin]; [0 0 0 1]];
+ijkOneBasedToIjkZeroBasedTransform=[[eye(3), [-1;-1;-1] ]; [0 0 0 1]];
+ijkOneBasedToLpsTransform=ijkZeroBasedToLpsTransform*ijkOneBasedToIjkZeroBasedTransform;
+% Use the one-based IJK transform (origin is at [1,1,1])
+img.ijkToLpsTransform=ijkOneBasedToLpsTransform;
 
 function datatype = getDatatype(metaType)
 
