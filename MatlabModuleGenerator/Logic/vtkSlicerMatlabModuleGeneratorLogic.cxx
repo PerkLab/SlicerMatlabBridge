@@ -35,19 +35,20 @@ static const std::string TEMPLATE_NAME="MatlabModuleTemplate";
 /* Define case insensitive string compare for all supported platforms. */
 #if defined( _WIN32 ) && !defined(__CYGWIN__)
   static const std::string MODULE_PROXY_TEMPLATE_EXTENSION=".bat";
+  static const std::string MATLAB_COMMANDER_EXECUTABLE_NAME="MatlabCommander.exe";
 #else
   static const std::string MODULE_PROXY_TEMPLATE_EXTENSION=".sh";
+  static const std::string MATLAB_COMMANDER_EXECUTABLE_NAME="MatlabCommander";
 #endif
 static const std::string MODULE_SCRIPT_TEMPLATE_EXTENSION=".m";
 static const std::string MODULE_DEFINITION_TEMPLATE_EXTENSION=".xml";
+
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkSlicerMatlabModuleGeneratorLogic);
 
 //----------------------------------------------------------------------------
 vtkSlicerMatlabModuleGeneratorLogic::vtkSlicerMatlabModuleGeneratorLogic()
-: MatlabScriptDirectory(NULL)
-, MatlabExecutablePath(NULL)
 {
 }
 
@@ -98,35 +99,53 @@ void vtkSlicerMatlabModuleGeneratorLogic
 
 //---------------------------------------------------------------------------
 const char* vtkSlicerMatlabModuleGeneratorLogic
-::GetMatlabScriptDirectory()
+::GetMatlabModuleDirectory()
 {
-  // Find out where the MatlabCommander CLI is (as the scripts must be in the same director as the MatlabCommander CLI)
-  // Retrieve the bin directory from the known path of the share directory 
-  std::string matlabScriptDirBase=this->GetModuleShareDirectory()+"/../../../../"+Slicer_CLIMODULES_BIN_DIR;
-  matlabScriptDirBase=vtksys::SystemTools::CollapseFullPath(matlabScriptDirBase.c_str());
-  std::string matlabScriptDir;
-  // If Debug or Release subdirectory exists below lib/Slicer-4.2/cli-modules directory then assume
-  // it is the build tree in windows (where executables are in a Debug or Release subdirectory)
-  // otherwise just use the parent (lib/Slicer-4.2/cli-modules) directory.
-#ifdef _DEBUG
-  matlabScriptDir+=matlabScriptDirBase+"/Debug";
-#else
-  matlabScriptDir+=matlabScriptDirBase+"/Release";
-#endif
-  if (!vtksys::SystemTools::FileExists(matlabScriptDir.c_str(),false))
-  {
-    // Debug or Release subdirectory doesn't exist, so it must be an installed module
-    matlabScriptDir=matlabScriptDirBase;
-  }
-  SetMatlabScriptDirectory(matlabScriptDir.c_str());
-  return this->MatlabScriptDirectory;
+  // Find out where the generated Matlab modules are
+  std::string dir=this->GetModuleShareDirectory()+"/../../../../../MatlabModules";
+  this->MatlabModuleDirectory=vtksys::SystemTools::CollapseFullPath(dir.c_str());     
+  return this->MatlabModuleDirectory.c_str();
 }
 
 //---------------------------------------------------------------------------
-vtkStdString vtkSlicerMatlabModuleGeneratorLogic
+const char* vtkSlicerMatlabModuleGeneratorLogic
+::GetMatlabCommandServerDirectory()
+{
+  // Find out where the commandserver Matlab files are
+  std::string dir=this->GetModuleShareDirectory()+"/../../../../"+Slicer_CLIMODULES_BIN_DIR+"/commandserver";
+  this->MatlabCommandServerDirectory=vtksys::SystemTools::CollapseFullPath(dir.c_str());  
+  return this->MatlabCommandServerDirectory.c_str();
+}
+
+//---------------------------------------------------------------------------
+const char* vtkSlicerMatlabModuleGeneratorLogic
+::GetMatlabCommanderPath()
+{
+  // Find out where the MatlabCommander CLI is
+  // Retrieve the bin directory from the known path of the share directory 
+  std::string climodulesDir=this->GetModuleShareDirectory()+"/../../../../"+Slicer_CLIMODULES_BIN_DIR;
+  climodulesDir=vtksys::SystemTools::CollapseFullPath(climodulesDir.c_str());
+  this->MatlabCommanderPath=climodulesDir+"/"+MATLAB_COMMANDER_EXECUTABLE_NAME;
+#if defined( _WIN32 ) && !defined(__CYGWIN__)
+  if (!vtksys::SystemTools::FileExists(this->MatlabCommanderPath.c_str(),true))
+  {
+    // The executable does not exist at the expected location, so probably it is a Windows build tree
+    // where executables are in the Debug or Release subdirectory
+    #ifdef _DEBUG
+      this->MatlabCommanderPath=climodulesDir+"/Debug/"+MATLAB_COMMANDER_EXECUTABLE_NAME;
+    #else
+      this->MatlabCommanderPath=climodulesDir+"/Release/"+MATLAB_COMMANDER_EXECUTABLE_NAME;
+    #endif
+  }
+#endif
+  return this->MatlabCommanderPath.c_str();
+}
+
+//---------------------------------------------------------------------------
+const char* vtkSlicerMatlabModuleGeneratorLogic
 ::GenerateModule(const char* inputModuleName)
 {  
-  vtkStdString overallResult;
+  this->GenerateModuleResult.clear();
 
   std::string fullModuleName=inputModuleName; // module name, including spaces  
   std::string moduleNameNoSpaces=inputModuleName; // module name without spaces
@@ -135,45 +154,61 @@ vtkStdString vtkSlicerMatlabModuleGeneratorLogic
   vtkStdString result;
   bool success=true;
 
-  // Proxy .bat or .sh file
-  if (!CreateFileFromTemplate(this->GetModuleShareDirectory()+"/"+TEMPLATE_NAME+MODULE_PROXY_TEMPLATE_EXTENSION,
-    std::string(this->GetMatlabScriptDirectory())+"/"+moduleNameNoSpaces+MODULE_PROXY_TEMPLATE_EXTENSION, TEMPLATE_NAME, moduleNameNoSpaces, result))
+  std::string targetDir=GetMatlabModuleDirectory();
+
+  if (! vtksys::SystemTools::MakeDirectory(targetDir.c_str()))
   {
+    this->GenerateModuleResult+="ERROR: Unable to create Matlab module directory '"+targetDir+"'\n";
     success=false;
-  }
-  overallResult+=result+"\n";
-  
+  } 
+ 
   // Matlab .m file
   if (!CreateFileFromTemplate(this->GetModuleShareDirectory()+"/"+TEMPLATE_NAME+MODULE_SCRIPT_TEMPLATE_EXTENSION,
-    std::string(this->GetMatlabScriptDirectory())+"/"+moduleNameNoSpaces+MODULE_SCRIPT_TEMPLATE_EXTENSION, TEMPLATE_NAME, moduleNameNoSpaces, result))
+    targetDir+"/"+moduleNameNoSpaces+MODULE_SCRIPT_TEMPLATE_EXTENSION, TEMPLATE_NAME, moduleNameNoSpaces, result))
   {
     success=false;
   }
-  overallResult+=result+"\n";
+  this->GenerateModuleResult+=result+"\n";
 
   // Module description .xml file
   if (!CreateFileFromTemplate(this->GetModuleShareDirectory()+"/"+TEMPLATE_NAME+MODULE_DEFINITION_TEMPLATE_EXTENSION,
-    std::string(this->GetMatlabScriptDirectory())+"/"+moduleNameNoSpaces+MODULE_DEFINITION_TEMPLATE_EXTENSION, TEMPLATE_NAME, fullModuleName, result))
+    targetDir+"/"+moduleNameNoSpaces+MODULE_DEFINITION_TEMPLATE_EXTENSION, TEMPLATE_NAME, fullModuleName, result))
   {
     success=false;
   }
-  overallResult+=result+"\n";
+  this->GenerateModuleResult+=result+"\n";
+
+  // Proxy .bat or .sh file
+  if (!CreateFileFromTemplate(this->GetModuleShareDirectory()+"/"+TEMPLATE_NAME+MODULE_PROXY_TEMPLATE_EXTENSION,
+    targetDir+"/"+moduleNameNoSpaces+MODULE_PROXY_TEMPLATE_EXTENSION, TEMPLATE_NAME, moduleNameNoSpaces, result))
+  {
+    success=false;
+  }
+  this->GenerateModuleResult+=result+"\n";
 
   if (success)
   {
-    overallResult+="Module generation was successful. Edit the module descriptor .xml and the .m file then restart Slicer.";
+    this->GenerateModuleResult+="\nModule generation was successful.\nEdit the module descriptor .xml and the .m file then restart Slicer.";
   }
   else
   {
-    overallResult+="Module generation failed";
+    this->GenerateModuleResult+="\nModule generation failed";
   }
-  return overallResult;
+  return this->GenerateModuleResult.c_str();
 }
 
+//---------------------------------------------------------------------------
 bool vtkSlicerMatlabModuleGeneratorLogic
 ::CreateFileFromTemplate(const vtkStdString& templateFilename, const vtkStdString& targetFilename, const vtkStdString& originalString, const vtkStdString& modifiedString, vtkStdString &result)
 {
   result.clear();
+
+  if (vtksys::SystemTools::FileExists(targetFilename.c_str(),true))
+  {
+    // Prevent accidental overwriting of existing valuable file with auto-generated file
+    result="Cannot create file, it already exists:\n "+targetFilename;
+    return false;
+  }
 
   // Open input file
   fstream templateFile;
@@ -218,4 +253,22 @@ bool vtkSlicerMatlabModuleGeneratorLogic
 
   result="File created:\n "+targetFilename;
   return true;
+}
+
+//---------------------------------------------------------------------------
+void vtkSlicerMatlabModuleGeneratorLogic
+::SetMatlabExecutablePath(const char* matlabExePath)
+{
+  this->MatlabExecutablePath = (matlabExePath==NULL)?"":matlabExePath;
+
+  std::string matlabEnvVar=std::string("SLICER_MATLAB_EXECUTABLE_PATH=")+this->MatlabExecutablePath;
+  vtksys::SystemTools::PutEnv(matlabEnvVar.c_str());
+}
+
+
+//---------------------------------------------------------------------------
+const char* vtkSlicerMatlabModuleGeneratorLogic
+::GetMatlabExecutablePath()
+{
+  return this->MatlabExecutablePath.c_str();
 }

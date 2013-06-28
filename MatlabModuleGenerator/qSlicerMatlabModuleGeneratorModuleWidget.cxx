@@ -83,7 +83,7 @@ void qSlicerMatlabModuleGeneratorModuleWidget::setup()
   connect( d->pushButton_GenerateModule, SIGNAL(clicked()), this, SLOT(generateModuleClicked()) );
 
   d->lineEdit_MatlabExecutablePath->setCurrentPath(d->logic()->GetMatlabExecutablePath());
-  d->lineEdit_MatlabScriptDirectory->setText(d->logic()->GetMatlabScriptDirectory());
+  d->lineEdit_MatlabScriptDirectory->setText(d->logic()->GetMatlabModuleDirectory());
 }
 
 //-----------------------------------------------------------------------------

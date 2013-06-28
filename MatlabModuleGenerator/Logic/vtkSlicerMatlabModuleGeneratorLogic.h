@@ -46,14 +46,25 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
 
   /// Get the directory where the generated Matlab script (and corresponding proxy shell script and XML description) files are stored
-  const char* GetMatlabScriptDirectory();
+  /// Typically: Extensions-NNN/MatlabModules
+  const char* GetMatlabModuleDirectory();
+
+  /// Get the directory where the cli_commandserver.m and other cli_*.m helper files are stored
+  /// Typically: Extensions-NNN/MatlabBridge/lib/Slicer-4.2/cli-modules/commandserver
+  const char* GetMatlabCommandServerDirectory();
+
+  /// Get the path to the MatlabCommander CLI executable
+  /// Typically: Extensions-NNN/MatlabBridge/lib/Slicer-4.2/cli-modules/MatlabCommander.exe)
+  const char* GetMatlabCommanderPath();
   
-  /// Get/set path to Matlab.exe
-  vtkGetStringMacro(MatlabExecutablePath);
-  vtkSetStringMacro(MatlabExecutablePath);
+  /// Get path to Matlab.exe
+  const char* GetMatlabExecutablePath();
+
+  /// Set path to Matlab.exe
+  void SetMatlabExecutablePath(const char* matlabExePath);
 
   /// Generates and installs a Matlab module and returns the status
-  vtkStdString GenerateModule(const char* moduleName);
+  const char* GenerateModule(const char* moduleName);
 
 protected:
   vtkSlicerMatlabModuleGeneratorLogic();
@@ -68,13 +79,14 @@ protected:
 
   /// return true if successful
   bool CreateFileFromTemplate(const vtkStdString& templateFilename, const vtkStdString& targetFilename, const vtkStdString& originalString, const vtkStdString& modifiedString, vtkStdString &result);
-
-  vtkSetStringMacro(MatlabScriptDirectory);
-
+  
 private:
 
-  char* MatlabScriptDirectory;
-  char* MatlabExecutablePath;
+  std::string MatlabModuleDirectory;
+  std::string MatlabCommandServerDirectory;
+  std::string MatlabCommanderPath;
+  std::string MatlabExecutablePath;
+  std::string GenerateModuleResult;
 
   vtkSlicerMatlabModuleGeneratorLogic(const vtkSlicerMatlabModuleGeneratorLogic&); // Not implemented
   void operator=(const vtkSlicerMatlabModuleGeneratorLogic&);               // Not implemented

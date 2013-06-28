@@ -17,6 +17,7 @@
 
 // Qt includes
 #include <QDebug> 
+#include <QDir>
 #include <QtPlugin>
 #include <QSettings> 
 
@@ -132,14 +133,37 @@ void qSlicerMatlabModuleGeneratorModule::setup()
   QString matlabExecutablePath = settings.value("Matlab/MatlabExecutablePath",QString("Matlab.exe")).toString(); 
   moduleGeneratorLogic->SetMatlabExecutablePath(matlabExecutablePath.toLatin1());
 
+//  vtksys::SystemTools::Delay(10000);
+
+  // Append Matlab module path to the additional paths
+  QStringList additionalPaths = app->revisionUserSettings()->value("Modules/AdditionalPaths").toStringList();
+  QString pathToAppend=moduleGeneratorLogic->GetMatlabModuleDirectory();
+  QDir dirToCheck(pathToAppend);
+  bool isPathToAppendAlreadyInAdditionalPaths=false;
+  foreach(const QString& path, additionalPaths)
+  {
+    if (dirToCheck == QDir(path))
+    {
+      isPathToAppendAlreadyInAdditionalPaths=true;
+      break;
+    }
+  }
+  if (!isPathToAppendAlreadyInAdditionalPaths)
+  {
+    additionalPaths << pathToAppend;
+    app->revisionUserSettings()->setValue("Modules/AdditionalPaths",additionalPaths); 
+  }  
+
   // Set Matlab executable and commandserver script paths in environment variables
   // for MatlabCommander CLI module
   // Ideally, the app->setEnvironmentVariable method should be used, but somehow app->setEnvironmentVariable 
   // causes failure in the sample data volume (and probably in other modules, too, as Python cannot find the "os" symbol)    
   std::string matlabEnvVar=std::string("SLICER_MATLAB_EXECUTABLE_PATH=")+std::string(matlabExecutablePath.toLatin1());
   vtksys::SystemTools::PutEnv(matlabEnvVar.c_str());
-  std::string scriptEnvVar=std::string("SLICER_MATLAB_COMMAND_SERVER_SCRIPT_PATH=")+moduleGeneratorLogic->GetMatlabScriptDirectory()+"/"+MATLAB_COMMAND_SERVER_SCRIPT_NAME;
+  std::string scriptEnvVar=std::string("SLICER_MATLAB_COMMAND_SERVER_SCRIPT_PATH=")+moduleGeneratorLogic->GetMatlabCommandServerDirectory()+"/"+MATLAB_COMMAND_SERVER_SCRIPT_NAME;
   vtksys::SystemTools::PutEnv(scriptEnvVar.c_str());
+  std::string commanderEnvVar=std::string("SLICER_MATLAB_COMMANDER_PATH=")+moduleGeneratorLogic->GetMatlabCommanderPath();
+  vtksys::SystemTools::PutEnv(commanderEnvVar.c_str());
 }
 
 //-----------------------------------------------------------------------------

@@ -337,19 +337,23 @@ int CallMatlabFunction(int argc, char * argv [])
       break;
     }
   }
-  
+
+  std::string cmd;
+
+  // Change directory to the current working directory (where the Matlab function .m file is located)
+  cmd += "cd('"+vtksys::SystemTools::GetCurrentWorkingDirectory()+"'); "; 
+
   // No return value:
   //   myfunction( cli_argsread({"--paramName1","paramValue1",...}) );
   // With return value:
   //   cli_argswrite( myfunction( cli_argsread({"--paramName1","paramValue1",...}) ) );
 
-  std::string functionName=argv[2];
-  std::string cmd;
   if (!returnParameterFileArgValue.empty())
   {
     // with return value
     cmd+="cli_argswrite('"+returnParameterFileArgValue+"',";
   }
+  std::string functionName=argv[2];
   cmd+=functionName+"(cli_argsread({";
 
   for (int argvIndex=3; argvIndex<argc; argvIndex++)

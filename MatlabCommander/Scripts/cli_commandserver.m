@@ -6,7 +6,10 @@ function cli_commandserver(port)
     import java.net.Socket
     import java.io.*
     import java.net.ServerSocket
-
+    
+    % Add current directory to the path so that all cli_* functions will be available even when the current working directory is changed
+    addpath(pwd);
+    
     serverSocketInfo.port=4100;
     serverSocketInfo.timeout=1000;
 
