@@ -4,7 +4,7 @@ project(MatlabBridge)
 
 # ------------------------------------------------------------------------
 set(MATLABBRIDGE_VERSION_MAJOR "0")
-set(MATLABBRIDGE_VERSION_MINOR "1")
+set(MATLABBRIDGE_VERSION_MINOR "2")
 set(MATLABBRIDGE_VERSION_PATCH "0")
 set(MATLABBRIDGE_VERSION ${MATLABBRIDGE_VERSION_MAJOR}.${MATLABBRIDGE_VERSION_MINOR}.${MATLABBRIDGE_VERSION_PATCH})
 
@@ -13,7 +13,7 @@ set(MATLABBRIDGE_VERSION ${MATLABBRIDGE_VERSION_MAJOR}.${MATLABBRIDGE_VERSION_MI
 set(EXTENSION_HOMEPAGE "http://www.slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/MatlabBridge")
 set(EXTENSION_CATEGORY "Developer Tools")
 set(EXTENSION_CONTRIBUTORS "Andras Lasso (PerkLab, Queen's University), Jean-Christophe Fillion-Robin (Kitware), Kevin Wang (Radiation Medicine Program, Princess Margaret Hospital, University Health Network Toronto)")
-set(EXTENSION_DESCRIPTION "The Matlab Bridge extension allows running Matlab scripts as command-line interface (CLI) modules directly from 3D Slicer. The only prerequisites for running Matlab scripts are having this extension and Matlab installed on the 3D Slicer computer (building of 3D Slicer, MEX files, etc. is not needed). Module version: ${MATLABBRIDGE_VERSION}.")
+set(EXTENSION_DESCRIPTION "The Matlab Bridge extension allows running Matlab scripts as command-line interface (CLI) modules directly from 3D Slicer. The only prerequisites for running Matlab scripts are having this extension and Matlab installed on the 3D Slicer computer (building of 3D Slicer, MEX files, etc. is not needed). Extension version: ${MATLABBRIDGE_VERSION}.")
 set(EXTENSION_ICONURL "http://www.slicer.org/slicerWiki/images/e/e8/MatlabBridgeLogo.png")
 set(EXTENSION_SCREENSHOTURLS "http://www.slicer.org/slicerWiki/images/2/2f/MatlabBridgeScreenshot1.png http://www.slicer.org/slicerWiki/images/1/16/MatlabBridgeScreenshot2.png http://www.slicer.org/slicerWiki/images/b/b9/MatlabBridgeScreenshot3.png")
 

@@ -45,16 +45,16 @@ endif()
 # Copy (and install) al cli_*.m script files
 
 file(GLOB SCRIPT_FILES 
-  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/Scripts"
-	"${CMAKE_CURRENT_SOURCE_DIR}/Scripts/CLI_*.m"
+  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/commandserver"
+	"${CMAKE_CURRENT_SOURCE_DIR}/commandserver/CLI_*.m"
 	) 
 
 foreach(SCRIPT_FILE ${SCRIPT_FILES})
   configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/Scripts/${SCRIPT_FILE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/commandserver/${SCRIPT_FILE}
     ${CMAKE_BINARY_DIR}/${Slicer_CLIMODULES_BIN_DIR}/commandserver/${SCRIPT_FILE}    
     COPYONLY)
   install(
     FILES ${CMAKE_BINARY_DIR}/${Slicer_CLIMODULES_BIN_DIR}/commandserver/${SCRIPT_FILE}
-    DESTINATION ${Slicer_INSTALL_CLIMODULES_BIN_DIR} COMPONENT Runtime)
+    DESTINATION ${Slicer_INSTALL_CLIMODULES_BIN_DIR}/commandserver COMPONENT Runtime)
 endforeach()
