@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Matlab</category>
+  <title>Landmark Registration</title>
+  <description><![CDATA[Perform a simple image processing and image statistics computation in Matlab.]]></description>
+  <version>0.0.0.1</version>
+  <documentation-url>http://www.slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/MatlabBridge</documentation-url>
+  <license/>
+  <contributor>Andras Lasso (PerkLab)</contributor>
+  <acknowledgements><![CDATA[SparKit is a project funded by Cancer Care Ontarioand the Ontario Consortium for Adaptive Interventions in Radiation Oncology (OCAIRO) to provide free, open-source toolset for radiotherapy and related image-guided interventions.]]></acknowledgements>
+  <parameters>
+    <label>Inputs</label>
+    <description><![CDATA[Parameters for the processing]]></description>
+    <point multiple="true" coordinateSystem="ras">
+      <name>fixedpoints</name>
+      <longflag>--fixedpoints</longflag>      
+      <label>Fixed points</label>
+      <description><![CDATA[Lists of fixed points]]></description>
+      <default>0,0,0</default>
+    </point>
+    <point multiple="true" coordinateSystem="ras">
+      <name>movingpoints</name>
+      <longflag>--movingpoints</longflag>      
+      <label>Moving  points</label>
+      <description><![CDATA[Lists of moving points]]></description>
+      <default>0,0,0</default>
+    </point>
+    <boolean>
+      <name>enablescaling</name>
+      <longflag>enablescaling</longflag>
+      <description><![CDATA[Enable scaling]]></description>
+      <label>Scaling</label>
+      <default>true</default>
+    </boolean>
+  </parameters>
+  <parameters>
+    <label>Output</label>    
+    <description><![CDATA[Computed registration output]]></description>
+    <transform type="linear" fileExtensions=".txt">
+      <longflag>movingtofixedtransform</longflag>
+      <description><![CDATA[Transformation matrix from moving to fixed point positions.]]></description>
+      <label>Moving to fixed transform</label>
+      <channel>output</channel>
+    </transform>    
+    <double>
+      <name>averageerror</name>
+      <label>Average error</label>
+      <channel>output</channel>
+      <default></default>
+      <description><![CDATA[Average error]]></description>
+    </double>    
+    <double>
+      <name>maxerror</name>
+      <label>Maximum error</label>
+      <channel>output</channel>
+      <default></default>
+      <description><![CDATA[Maximum error]]></description>
+    </double>    
+    </parameters>
+</executable>
