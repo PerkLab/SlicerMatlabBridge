@@ -40,9 +40,9 @@
       <channel>output</channel>
     </transform>    
     <double>
-      <label>Average error</label>
-      <description><![CDATA[Average error]]></description>
-      <name>averageerror</name>
+      <label>Least square error</label>
+      <description><![CDATA[Least square error]]></description>
+      <name>lsqerror</name>
       <channel>output</channel>
       <default></default>
     </double>    

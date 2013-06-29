@@ -46,12 +46,12 @@
     <image>
       <label>Input Volume</label>
       <description><![CDATA[Input volume to be filtered]]></description>
-      <index>0</index>    
+      <longflag>inputvolume</longflag>    
       <channel>input</channel>
     </image>
     <image>
       <label>Output Volume</label>
-      <description><![CDATA[Output filtered]]></description>
+      <description><![CDATA[Output with fiducial locations filled with the chosen intensity]]></description>
       <longflag>outputvolume</longflag>    
       <channel>output</channel>
     </image>

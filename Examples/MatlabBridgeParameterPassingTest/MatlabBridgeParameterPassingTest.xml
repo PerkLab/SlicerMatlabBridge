@@ -104,7 +104,7 @@
       <channel>input</channel>
     </directory>
     <image>
-      <label>Input image</label>
+      <label>Input image</label>      
       <description><![CDATA[An input image]]></description>
       <longflag>image1</longflag>
       <channel>input</channel>
@@ -140,12 +140,14 @@
     <image>
       <label>First index argument</label>
       <description><![CDATA[First index argument is an image]]></description>
+      <name>index0</name>
       <index>0</index>
       <channel>input</channel>
     </image>
     <image>
       <label>Second index argument</label>
       <description><![CDATA[Second index argument is an image]]></description>
+      <name>index1</name>
       <index>1</index>
       <channel>output</channel>
     </image>
