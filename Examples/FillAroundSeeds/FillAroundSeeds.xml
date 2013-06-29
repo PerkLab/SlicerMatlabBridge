@@ -12,17 +12,15 @@
     <label>Processing Parameters</label>
     <description><![CDATA[Parameters for the processing]]></description>
     <point multiple="true" coordinateSystem="ras">
-      <name>seed</name>
-      <longflag>--seed</longflag>      
       <label>Seeds</label>
       <description><![CDATA[Lists of points in the CLI correspond to slicer fiducial lists]]></description>
+      <longflag>seed</longflag>      
       <default>0,0,0</default>
     </point>
     <integer>
-      <name>fillvalue</name>
-      <longflag>--fillvalue</longflag>
-      <description><![CDATA[Voxels around the seed points will be set to this value]]></description>
       <label>Fill value</label>
+      <description><![CDATA[Voxels around the seed points will be set to this value]]></description>
+      <longflag>fillvalue</longflag>
       <default>500</default>
       <constraints>
         <minimum>-1000</minimum>
@@ -31,10 +29,9 @@
       </constraints>      
     </integer>
     <float>
-      <name>radius</name>
-      <longflag>--radius</longflag>
-      <description><![CDATA[Voxels around the seed points will be set to this value]]></description>
       <label>Fill radius (mm)</label>
+      <description><![CDATA[Voxels around the seed points will be set to this value]]></description>
+      <longflag>radius</longflag>
       <default>5</default>
       <constraints>
         <minimum>0.5</minimum>
@@ -47,18 +44,16 @@
     <label>IO</label>
     <description><![CDATA[Input/output parameters]]></description>
     <image>
-      <name>inputVolume</name>
       <label>Input Volume</label>
-      <channel>input</channel>
-      <index>0</index>
       <description><![CDATA[Input volume to be filtered]]></description>
+      <index>0</index>    
+      <channel>input</channel>
     </image>
     <image>
-      <name>outputVolume</name>
       <label>Output Volume</label>
-      <channel>output</channel>
-      <index>1</index>
       <description><![CDATA[Output filtered]]></description>
+      <longflag>outputvolume</longflag>    
+      <channel>output</channel>
     </image>
   </parameters>
 </executable>

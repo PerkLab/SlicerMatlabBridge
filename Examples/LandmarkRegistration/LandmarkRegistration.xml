@@ -12,24 +12,21 @@
     <label>Inputs</label>
     <description><![CDATA[Parameters for the processing]]></description>
     <point multiple="true" coordinateSystem="ras">
-      <name>fixedpoints</name>
-      <longflag>--fixedpoints</longflag>      
       <label>Fixed points</label>
       <description><![CDATA[Lists of fixed points]]></description>
+      <longflag>fixedpoints</longflag>
       <default>0,0,0</default>
     </point>
     <point multiple="true" coordinateSystem="ras">
-      <name>movingpoints</name>
-      <longflag>--movingpoints</longflag>      
       <label>Moving  points</label>
       <description><![CDATA[Lists of moving points]]></description>
+      <longflag>movingpoints</longflag>
       <default>0,0,0</default>
     </point>
     <boolean>
-      <name>enablescaling</name>
-      <longflag>enablescaling</longflag>
-      <description><![CDATA[Enable scaling]]></description>
       <label>Scaling</label>
+      <description><![CDATA[Enable scaling]]></description>
+      <longflag>enablescaling</longflag>
       <default>true</default>
     </boolean>
   </parameters>
@@ -37,24 +34,24 @@
     <label>Output</label>    
     <description><![CDATA[Computed registration output]]></description>
     <transform type="linear" fileExtensions=".txt">
-      <longflag>movingtofixedtransform</longflag>
-      <description><![CDATA[Transformation matrix from moving to fixed point positions.]]></description>
       <label>Moving to fixed transform</label>
+      <description><![CDATA[Transformation matrix from moving to fixed point positions.]]></description>
+      <longflag>movingtofixedtransform</longflag>
       <channel>output</channel>
     </transform>    
     <double>
-      <name>averageerror</name>
       <label>Average error</label>
+      <description><![CDATA[Average error]]></description>
+      <name>averageerror</name>
       <channel>output</channel>
       <default></default>
-      <description><![CDATA[Average error]]></description>
     </double>    
     <double>
-      <name>maxerror</name>
       <label>Maximum error</label>
+      <description><![CDATA[Maximum error]]></description>
+      <name>maxerror</name>
       <channel>output</channel>
       <default></default>
-      <description><![CDATA[Maximum error]]></description>
     </double>    
     </parameters>
 </executable>

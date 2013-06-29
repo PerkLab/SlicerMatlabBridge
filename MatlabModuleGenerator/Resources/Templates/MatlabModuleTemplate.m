@@ -4,20 +4,20 @@ function outputParams=MatlabModuleTemplate(inputParams)
 %
 % Parameters:
 %  inputParams.threshold: threshold value
-%  inputParams.unnamed{1}: input image filename
-%  inputParams.unnamed{2}: output image filename, result of the processing
+%  inputParams.inputvolume: input image filename
+%  inputParams.outputvolume: output image filename, result of the processing
 %  outputParams.min: image minimum value
 %  outputParams.max: image maximum value
 %
 
-img=cli_imageread(inputParams.unnamed{1});
+img=cli_imageread(inputParams.inputvolume);
 
 outputParams.min=min(min(min(img.pixelData)));
 outputParams.max=max(max(max(img.pixelData)));
 
 img.pixelData=(double(img.pixelData)>inputParams.threshold)*100;
 
-cli_imagewrite(inputParams.unnamed{2}, img);
+cli_imagewrite(inputParams.outputvolume, img);
 
 %% Help for reading/writing parameters
 %
@@ -40,7 +40,10 @@ cli_imagewrite(inputParams.unnamed{2}, img);
 %  measurement:
 %    value=cli_measurementread(inputParams.name);
 %
-%  Note: for retrieving indexth-th unnamed parameter use inputParams.unnamed{index+1} instead of inputParams.name
+%  Notes:
+%    - Input and file (image, transform, measurement) parameter names are defined by the <longflag> element in the XML file
+%    - Output parameter names are defined by the <name> element in the XML file
+%    - For retrieving indexth-th unnamed parameter use inputParams.unnamed{index+1} instead of inputParams.name
 %
 %
 % Writing output parameters

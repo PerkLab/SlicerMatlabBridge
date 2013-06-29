@@ -20,4 +20,4 @@ for seedIndex=1:seedCount
   img.pixelData(seed_IJK(1)-radius_IJK(1):seed_IJK(1)+radius_IJK(1),seed_IJK(2)-radius_IJK(2):seed_IJK(2)+radius_IJK(2),seed_IJK(3)-radius_IJK(3):seed_IJK(3)+radius_IJK(3))=ones(radius_IJK(1)*2+1,radius_IJK(2)*2+1,radius_IJK(3)*2+1)*inputParams.fillvalue;
 end
 
-cli_imagewrite(inputParams.unnamed{2}, img);
+cli_imagewrite(inputParams.outputvolume, img);
