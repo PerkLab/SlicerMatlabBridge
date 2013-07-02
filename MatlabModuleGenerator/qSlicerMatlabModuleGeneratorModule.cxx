@@ -36,6 +36,12 @@
 
 const std::string MATLAB_COMMAND_SERVER_SCRIPT_NAME="cli_commandserver.m";
 
+#if defined( _WIN32 ) && !defined(__CYGWIN__)
+  static const std::string DEFAULT_MATLAB_PROCESS_PATH="matlab.exe";
+#else
+  static const std::string DEFAULT_MATLAB_PROCESS_PATH="/usr/local/bin/matlab";
+#endif
+
 //-----------------------------------------------------------------------------
 Q_EXPORT_PLUGIN2(qSlicerMatlabModuleGeneratorModule, qSlicerMatlabModuleGeneratorModule);
 
@@ -128,12 +134,43 @@ void qSlicerMatlabModuleGeneratorModule::setup()
     return;
   }
 
-  // Get Matlab executable path from application settings and store in the logic
-  QSettings settings;
-  QString matlabExecutablePath = settings.value("Matlab/MatlabExecutablePath",QString("Matlab.exe")).toString(); 
-  moduleGeneratorLogic->SetMatlabExecutablePath(matlabExecutablePath.toLatin1());
+  //Uncomment this to allow some time to attach the debugger
+  //vtksys::SystemTools::Delay(10000);
 
-//  vtksys::SystemTools::Delay(10000);
+  // Get Matlab executable path and store in the logic. Search priority:
+  // 1. Slicer.ini application settings
+  // 2. SLICER_MATLAB_EXECUTABLE_PATH environment variable
+  // 3. Windows App Paths
+  // 4. Default: matlab.exe or /usr/local/bin/matlab
+
+  // 4. Default
+  QString matlabProcessPath=QString(DEFAULT_MATLAB_PROCESS_PATH.c_str());
+
+  // 3. Windows App Paths
+#if defined( _WIN32 ) && !defined(__CYGWIN__)
+  QSettings matlabExePathRegistryKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\matlab.exe",QSettings::NativeFormat);
+  QString matlabExePathRegistryValue=matlabExePathRegistryKey.value(".", NULL).toString(); // "." reads the (Default) value
+  if (!matlabExePathRegistryValue.isEmpty())
+  {
+    matlabProcessPath=matlabExePathRegistryValue;
+  }
+#else
+  // we could do some search on linux/mac
+#endif
+
+  // 2. SLICER_MATLAB_EXECUTABLE_PATH environment variable
+  // If the Matlab path is defined in an environment variable then use that
+  const char* matlabExePathEnvValue=getenv("SLICER_MATLAB_EXECUTABLE_PATH");
+  if (matlabExePathEnvValue && strlen(matlabExePathEnvValue)>0)
+  {
+    matlabProcessPath=QString(matlabExePathEnvValue);
+  }
+
+  // 1. Slicer.ini application settings
+  // If the Matlab path is defined in the Slicer settings then use that
+  QSettings settings;
+  QString matlabExecutablePath = settings.value("Matlab/MatlabExecutablePath",matlabProcessPath).toString(); 
+  moduleGeneratorLogic->SetMatlabExecutablePath(matlabExecutablePath.toLatin1());
 
   // Append Matlab module path to the additional paths
   QStringList additionalPaths = app->revisionUserSettings()->value("Modules/AdditionalPaths").toStringList();

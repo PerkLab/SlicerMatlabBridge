@@ -136,10 +136,10 @@ bool StartMatlabServer()
       waitStatus=vtksysProcess_WaitForData(gp,&data,&length,&timeoutSec);
       if (waitStatus==vtksysProcess_Pipe_Timeout)
       {
-        std::cerr << "ERROR: Timeout (execution time>"<<allowedTimeoutSec<<"sec) while trying to execute the process. Kill the process." << std::endl;
+        std::cerr << "ERROR: Timeout (execution time>"<<allowedTimeoutSec<<"sec) while trying to execute the Matlab process. Kill the process." << std::endl;
         vtksysProcess_Kill(gp);
       }
-      //std::cerr << "Process start timeout remaining: "<<timeoutSec<<" length="<<length<<std::endl;
+      //std::cerr << "Matlab process start timeout remaining: "<<timeoutSec<<" length="<<length<<std::endl;
       for(int i=0;i<length;i++)
       {
         buffer += data[i];
@@ -151,9 +151,9 @@ bool StartMatlabServer()
     if (vtksysProcess_WaitForExit(gp, 0)==0)
     {
       // 0 = Child did not terminate 
-      std::cerr << "Process did not terminate within the specified timeout"<<std::endl;
+      std::cerr << "Matlab process did not terminate within the specified timeout"<<std::endl;
     }
-    //std::cout << "Execution time was: " << allowedTimeoutSec - timeoutSec << "sec" << std::endl; 
+    //std::cout << "Matlab process execution time was: " << allowedTimeoutSec - timeoutSec << "sec" << std::endl; 
 
     int result(0); 
     switch ( vtksysProcess_GetState(gp) )
@@ -161,21 +161,25 @@ bool StartMatlabServer()
     case vtksysProcess_State_Exited: 
       {
         result = vtksysProcess_GetExitValue(gp); 
-        //std::cout << "Process exited: " << result << std::endl;
-        //std::cout << "Program output: " << buffer << std::endl;
+        if (result!=0)
+        {
+          std::cerr << "ERROR: Matlab process exited with code: " << result << std::endl;
+          std::cout << "Matlab process output: " << buffer << std::endl;
+          success=false;
+        }
       }
       break; 
     case vtksysProcess_State_Error: 
       {
-        std::cerr << "ERROR: Error during execution: " << vtksysProcess_GetErrorString(gp) << std::endl;
-        std::cout << "Program output: " << buffer << std::endl;
+        std::cerr << "ERROR: Error during Matlab process execution: " << vtksysProcess_GetErrorString(gp) << std::endl;
+        std::cout << "Matlab process output: " << buffer << std::endl;
         success=false;
       }
       break;
     case vtksysProcess_State_Exception: 
       {
-        std::cerr << "ERROR: Exception during execution: " << vtksysProcess_GetExceptionString(gp) << std::endl;
-        std::cout << "Program output: " << buffer << std::endl;
+        std::cerr << "ERROR: Exception during Matlab process execution: " << vtksysProcess_GetExceptionString(gp) << std::endl;
+        std::cout << "Matlab process output: " << buffer << std::endl;
         success=false;
       }
       break;
@@ -183,15 +187,15 @@ bool StartMatlabServer()
     case vtksysProcess_State_Executing:
     case vtksysProcess_State_Expired: 
       {
-        std::cerr << "ERROR: Unexpected ending state after running execution" << std::endl;
-        std::cout << "Program output: " << buffer << std::endl;
+        std::cerr << "ERROR: Unexpected ending state after Matlab process execution" << std::endl;
+        std::cout << "Matlab process output: " << buffer << std::endl;
         success=false;
       }
       break;
     case vtksysProcess_State_Killed: 
       {
-        std::cerr << "ERROR: Program killed" << std::endl;
-        std::cout << "Program output: " << buffer << std::endl;
+        std::cerr << "ERROR: Matlab process killed" << std::endl;
+        std::cout << "Matlab process output: " << buffer << std::endl;
         success=false;
       }
       break;
@@ -201,7 +205,7 @@ bool StartMatlabServer()
   }
   catch (...)
   {
-    std::cerr << "ERROR: Unknown exception while trying to execute command" << std::endl; 
+    std::cerr << "ERROR: Unknown exception while trying to execute Matlab process" << std::endl; 
     success=false;; 
   }
 
