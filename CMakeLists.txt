@@ -2,12 +2,14 @@ cmake_minimum_required(VERSION 2.8.9)
 
 project(MatlabBridge)
 
+#-----------------------------------------------------------------------------
+OPTION(MATLABBRIDGE_ENABLE_MATLAB_TESTING "Enable using of Matlab for testing. Turn this option requires Matlab to be installed on this computer." OFF)
+
 # ------------------------------------------------------------------------
 set(MATLABBRIDGE_VERSION_MAJOR "0")
-set(MATLABBRIDGE_VERSION_MINOR "2")
+set(MATLABBRIDGE_VERSION_MINOR "3")
 set(MATLABBRIDGE_VERSION_PATCH "0")
 set(MATLABBRIDGE_VERSION ${MATLABBRIDGE_VERSION_MAJOR}.${MATLABBRIDGE_VERSION_MINOR}.${MATLABBRIDGE_VERSION_PATCH})
-
 
 #-----------------------------------------------------------------------------
 set(EXTENSION_HOMEPAGE "http://www.slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/MatlabBridge")
