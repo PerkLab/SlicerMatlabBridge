@@ -10,8 +10,8 @@ if [ $1 = "--xml" ]; then
   exit 0
 fi
 
-# Make this .sh file's location the working directory (that's where the MatlabCommander is)
-cd "$( dirname "$0" )"
+# Make the MatlabCommander path the current working directory (otherwise it does not find the .so file)
+cd "$( dirname "$SLICER_MATLAB_COMMANDER_PATH" )"
 
 # Forward parameters to the Matlab CLI
 "$SLICER_HOME/Slicer" --launcher-no-splash --launch "$SLICER_MATLAB_COMMANDER_PATH" --call-matlab-function $MODULE_NAME $*
