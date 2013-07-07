@@ -159,7 +159,8 @@ function result=WriteOpenIGTLinkStringMessage(clientSocket, msgString, deviceNam
     msg.dataTypeName='STRING';
     msg.deviceName=deviceName;
     msg.timestamp=0;
-    msg.body=[convertFromUint16ToUint8Vector(3),convertFromUint16ToUint8Vector(length(msgString)),uint8(msgString)];
+    msgString=[uint8(msgString) uint8(0)]; % Convert string to uint8 vector and add terminator character
+    msg.body=[convertFromUint16ToUint8Vector(3),convertFromUint16ToUint8Vector(length(msgString)),msgString];
     result=WriteOpenIGTLinkMessage(clientSocket, msg);
 end
 
@@ -251,25 +252,29 @@ function result=convertFromUint8VectorToUint16(uint8Vector)
   result=int32(uint8Vector(1))*256+int32(uint8Vector(2));
 end 
 
-function result=convertFromUint16ToUint8Vector(uint16Value)
-  result=[uint8(uint16Value/256), uint8(mod(uint16Value,256))];
-end 
-
 function result=convertFromUint8VectorToInt64(uint8Vector)
   multipliers = [256^7 256^6 256^5 256^4 256^3 256^2 256^1 1];
   result = sum(int64(uint8Vector).*int64(multipliers));
 end 
 
+function selectedByte=getNthByte(multibyte, n)
+  selectedByte=uint8(mod(floor(multibyte/256^n),256));
+end
+
+function result=convertFromUint16ToUint8Vector(uint16Value)
+  result=[getNthByte(uint16Value,1) getNthByte(uint16Value,0)];
+end 
+
 function result=convertFromInt64ToUint8Vector(int64Value)
   result=zeros(1,8,'uint8');
-  result(1)=uint8(int64Value/256^7);
-  result(2)=uint8(mod(int64Value/256^6,256));
-  result(3)=uint8(mod(int64Value/256^5,256));
-  result(4)=uint8(mod(int64Value/256^4,256));
-  result(5)=uint8(mod(int64Value/256^3,256));
-  result(6)=uint8(mod(int64Value/256^2,256));
-  result(7)=uint8(mod(int64Value/256^1,256));
-  result(8)=uint8(mod(int64Value,256));
+  result(1)=getNthByte(int64Value,7);
+  result(2)=getNthByte(int64Value,6);
+  result(3)=getNthByte(int64Value,5);
+  result(4)=getNthByte(int64Value,4);
+  result(5)=getNthByte(int64Value,3);
+  result(6)=getNthByte(int64Value,2);
+  result(7)=getNthByte(int64Value,1);
+  result(8)=getNthByte(int64Value,0);
 end 
 
 function paddedStr=padString(str,strLen)

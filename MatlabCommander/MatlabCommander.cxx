@@ -34,7 +34,11 @@ std::string ReceiveString(igtl::Socket * socket, igtl::MessageHeader::Pointer& h
   stringMsg->AllocatePack();
 
   // Receive transform data from the socket
-  socket->Receive(stringMsg->GetPackBodyPointer(), stringMsg->GetPackBodySize());
+  int received=socket->Receive(stringMsg->GetPackBodyPointer(), stringMsg->GetPackBodySize());
+  if (received!=stringMsg->GetPackBodySize())
+  {
+    std::cerr << "WARNING: failed to receive complete message body" << std::endl;
+  }
 
   // Deserialize the transform data
   // If you want to skip CRC check, call Unpack() without argument.
@@ -420,6 +424,11 @@ int CallStandardCli(int argc, char * argv [])
     std::cerr << reply << std::endl;
     completed=false;
   }
+  
+  // Remove newline characters, as it would confuse the return parameter file
+  std::replace( reply.begin(), reply.end(), '\r', '|');
+  std::replace( reply.begin(), reply.end(), '\n', '|');
+
   SetReturnValues(returnParameterFile,reply.c_str(),completed);    
   return EXIT_SUCCESS; // always return with EXIT_SUCCESS, otherwise Slicer ignores the return values and we cannot show the reply on the module GUI
 }
