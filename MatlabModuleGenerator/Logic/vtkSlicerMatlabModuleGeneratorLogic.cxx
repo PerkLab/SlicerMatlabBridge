@@ -39,6 +39,7 @@ static const std::string TEMPLATE_NAME="MatlabModuleTemplate";
 #else
   static const std::string MODULE_PROXY_TEMPLATE_EXTENSION="";
   static const std::string MATLAB_COMMANDER_EXECUTABLE_NAME="MatlabCommander";
+  #include <sys/stat.h>
 #endif
 static const std::string MODULE_SCRIPT_TEMPLATE_EXTENSION=".m";
 static const std::string MODULE_DEFINITION_TEMPLATE_EXTENSION=".xml";
@@ -191,7 +192,7 @@ const char* vtkSlicerMatlabModuleGeneratorLogic
       // no need to change file attributes to make the proxy executable
 #else
     mode_t mode=S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH;
-    vtksys::SystemTools::GetPermissions(proxyTargetFilePath, mode);
+    vtksys::SystemTools::GetPermissions(proxyTargetFilePath.c_str(), mode);
     mode |= S_IXUSR|S_IXGRP|S_IXOTH; // set executable permission for user, group, and others
     if (!vtksys::SystemTools::SetPermissions(proxyTargetFilePath.c_str(),mode)) 
     {
