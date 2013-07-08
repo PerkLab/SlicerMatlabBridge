@@ -37,7 +37,7 @@ static const std::string TEMPLATE_NAME="MatlabModuleTemplate";
   static const std::string MODULE_PROXY_TEMPLATE_EXTENSION=".bat";
   static const std::string MATLAB_COMMANDER_EXECUTABLE_NAME="MatlabCommander.exe";
 #else
-  static const std::string MODULE_PROXY_TEMPLATE_EXTENSION=".sh";
+  static const std::string MODULE_PROXY_TEMPLATE_EXTENSION="";
   static const std::string MATLAB_COMMANDER_EXECUTABLE_NAME="MatlabCommander";
 #endif
 static const std::string MODULE_SCRIPT_TEMPLATE_EXTENSION=".m";
@@ -179,10 +179,25 @@ const char* vtkSlicerMatlabModuleGeneratorLogic
   this->GenerateModuleResult+=result+"\n";
 
   // Proxy .bat or .sh file
+  std::string proxyTargetFilePath=targetDir+"/"+moduleNameNoSpaces+MODULE_PROXY_TEMPLATE_EXTENSION;
   if (!CreateFileFromTemplate(this->GetModuleShareDirectory()+"/"+TEMPLATE_NAME+MODULE_PROXY_TEMPLATE_EXTENSION,
-    targetDir+"/"+moduleNameNoSpaces+MODULE_PROXY_TEMPLATE_EXTENSION, TEMPLATE_NAME, moduleNameNoSpaces, result))
+    proxyTargetFilePath, TEMPLATE_NAME, moduleNameNoSpaces, result))
   {
     success=false;
+  }
+  else
+  {
+#if defined( _WIN32 ) && !defined(__CYGWIN__)
+      // no need to change file attributes to make the proxy executable
+#else
+    mode_t mode=S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH;
+    vtksys::SystemTools::GetPermissions(proxyTargetFilePath, mode);
+    mode |= S_IXUSR|S_IXGRP|S_IXOTH; // set executable permission for user, group, and others
+    if (!vtksys::SystemTools::SetPermissions(proxyTargetFilePath.c_str(),mode)) 
+    {
+      result+=" Failed to set the file permission to allow execution - Slicer may not discover this module until the file permission is set allow execution.";
+    }
+#endif
   }
   this->GenerateModuleResult+=result+"\n";
 

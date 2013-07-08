@@ -69,7 +69,7 @@ set(TEMPLATE_FILES
 IF (WIN32)
   set(TEMPLATE_FILES ${TEMPLATE_FILES} MatlabModuleTemplate.bat)
 ELSE()
-  set(TEMPLATE_FILES ${TEMPLATE_FILES} MatlabModuleTemplate.sh)
+  set(TEMPLATE_FILES ${TEMPLATE_FILES} MatlabModuleTemplate)
 ENDIF() 
 
 foreach(TEMPLATE_FILE ${TEMPLATE_FILES})
