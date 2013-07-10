@@ -18,7 +18,7 @@ if not defined SLICER_MATLAB_EXECUTABLE_PATH echo ERROR: SLICER_MATLAB_EXECUTABL
 rem Make the .bat file location to be the working directory (that's where the MatlabCommander.exe is)
 pushd "%~dp0"
 rem Forward parameters to the Matlab CLI
-"%SLICER_HOME%/Slicer.exe" --launcher-no-splash --launch %SLICER_MATLAB_COMMANDER_PATH% --call-matlab-function %MODULE_NAME% %*
+"%SLICER_HOME%/Slicer.exe" --launcher-no-splash --launch "%SLICER_MATLAB_COMMANDER_PATH%" --call-matlab-function %MODULE_NAME% %*
 if errorlevel 1 exit /b 1
 rem Return with success
 exit /b 0
