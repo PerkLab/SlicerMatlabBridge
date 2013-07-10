@@ -87,24 +87,15 @@ function cli_commandserver(port)
               replyDeviceName=deviceName;
               replyDeviceName(1:3)='ACK';
               try
-                % try running the command and capture the output, if there
-                % is no function found that returns a value then the
-                % function will not executed and we will retry running it
-                % without expecting a return value
                 disp([' Execute command: ',cmd]);
-                response=eval(cmd);
-                disp(' Command execution completed successfully');
-              catch
-                % failed, so the command is either invalid or does not provide output          
-                try
-                  % retry without expecting an output
-                  eval(cmd);
-                  disp(' Command execution completed successfully');
+                response=evalc(cmd);
+                if (isempty(response))
+                  % Replace empty response by OK to indicate success
                   response='OK';
-                catch ME
-                  % failed with and without an output, the command must be invalid
-                  response=['ERROR: Command execution failed. ',ME.getReport('extended','hyperlinks','off')];
-                end          
+                end
+                disp(' Command execution completed successfully');
+              catch ME
+                response=['ERROR: Command execution failed. ',ME.getReport('extended','hyperlinks','off')];
               end
             end
         else

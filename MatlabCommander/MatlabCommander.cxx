@@ -426,8 +426,8 @@ int CallStandardCli(int argc, char * argv [])
   }
   
   // Remove newline characters, as it would confuse the return parameter file
-  std::replace( reply.begin(), reply.end(), '\r', '|');
-  std::replace( reply.begin(), reply.end(), '\n', '|');
+  std::replace( reply.begin(), reply.end(), '\r', ' ');
+  std::replace( reply.begin(), reply.end(), '\n', ' ');
 
   SetReturnValues(returnParameterFile,reply.c_str(),completed);    
   return EXIT_SUCCESS; // always return with EXIT_SUCCESS, otherwise Slicer ignores the return values and we cannot show the reply on the module GUI
