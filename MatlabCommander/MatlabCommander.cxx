@@ -17,7 +17,7 @@ const std::string MATLAB_DEFAULT_HOST="127.0.0.1";
 const int MATLAB_DEFAULT_PORT=4100;
 
 const int MAX_MATLAB_STARTUP_TIME_SEC=60; // maximum time allowed for Matlab to start
-const int MAX_MATLAB_LAUNCHER_STARTUP_TIME_SEC=30; // maximum time allowed for Matlab launcher to start
+const int MAX_MATLAB_LAUNCHER_STARTUP_TIME_SEC=60; // maximum time allowed for Matlab launcher to start
 
 enum ExecuteMatlabCommandStatus
 {
@@ -140,8 +140,7 @@ bool StartMatlabServer()
       waitStatus=vtksysProcess_WaitForData(gp,&data,&length,&timeoutSec);
       if (waitStatus==vtksysProcess_Pipe_Timeout)
       {
-        std::cerr << "ERROR: Timeout (execution time>"<<allowedTimeoutSec<<"sec) while trying to execute the Matlab process. Kill the process." << std::endl;
-        vtksysProcess_Kill(gp);
+        std::cerr << "ERROR: Timeout (execution time > "<<allowedTimeoutSec<<"sec) while trying to execute the Matlab process"<< std::endl;
       }
       //std::cerr << "Matlab process start timeout remaining: "<<timeoutSec<<" length="<<length<<std::endl;
       for(int i=0;i<length;i++)
@@ -152,10 +151,10 @@ bool StartMatlabServer()
     }
     while (waitStatus!=vtksysProcess_Pipe_None);         
 
-    if (vtksysProcess_WaitForExit(gp, 0)==0)
+    if (vtksysProcess_WaitForExit(gp, &timeoutSec)==0)
     {
       // 0 = Child did not terminate 
-      std::cerr << "Matlab process did not terminate within the specified timeout"<<std::endl;
+      std::cerr << "ERROR: Matlab process did not terminate within the specified timeout"<<std::endl;
     }
     //std::cout << "Matlab process execution time was: " << allowedTimeoutSec - timeoutSec << "sec" << std::endl; 
 
@@ -168,7 +167,7 @@ bool StartMatlabServer()
         if (result!=0)
         {
           std::cerr << "ERROR: Matlab process exited with code: " << result << std::endl;
-          std::cout << "Matlab process output: " << buffer << std::endl;
+          std::cerr << "Matlab process output: " << buffer << std::endl;
           success=false;
         }
       }
@@ -176,14 +175,14 @@ bool StartMatlabServer()
     case vtksysProcess_State_Error: 
       {
         std::cerr << "ERROR: Error during Matlab process execution: " << vtksysProcess_GetErrorString(gp) << std::endl;
-        std::cout << "Matlab process output: " << buffer << std::endl;
+        std::cerr << "Matlab process output: " << buffer << std::endl;
         success=false;
       }
       break;
     case vtksysProcess_State_Exception: 
       {
         std::cerr << "ERROR: Exception during Matlab process execution: " << vtksysProcess_GetExceptionString(gp) << std::endl;
-        std::cout << "Matlab process output: " << buffer << std::endl;
+        std::cerr << "Matlab process output: " << buffer << std::endl;
         success=false;
       }
       break;
@@ -192,14 +191,14 @@ bool StartMatlabServer()
     case vtksysProcess_State_Expired: 
       {
         std::cerr << "ERROR: Unexpected ending state after Matlab process execution" << std::endl;
-        std::cout << "Matlab process output: " << buffer << std::endl;
+        std::cerr << "Matlab process output: " << buffer << std::endl;
         success=false;
       }
       break;
     case vtksysProcess_State_Killed: 
       {
         std::cerr << "ERROR: Matlab process killed" << std::endl;
-        std::cout << "Matlab process output: " << buffer << std::endl;
+        std::cerr << "Matlab process output: " << buffer << std::endl;
         success=false;
       }
       break;
@@ -213,16 +212,14 @@ bool StartMatlabServer()
     success=false;; 
   }
 
-  if (success)
+  if (!success)
   {
-    std::cout << "Matlab process start requested successfully" << std::endl;
-  }
-  else
-  {
-    std::cerr << "ERROR: Failed to execute Matlab" << std::endl; 
+    std::cerr << "ERROR: Failed to execute Matlab process: "<<matlabExecutablePath<<std::endl;
+    return false;    
   }
 
-  return success;
+  std::cout << "Matlab process start requested successfully" << std::endl;
+  return true;
 }
 
 ExecuteMatlabCommandStatus ExecuteMatlabCommand(const std::string& hostname, int port, const std::string &cmd, std::string &reply)
@@ -394,7 +391,7 @@ int CallMatlabFunction(int argc, char * argv [])
   ExecuteMatlabCommandStatus status=ExecuteMatlabCommand(MATLAB_DEFAULT_HOST, MATLAB_DEFAULT_PORT, cmd, reply);
   if (status!=COMMAND_STATUS_SUCCESS)
   {
-    std::cerr << "ERROR: " << reply << std::endl;
+    std::cerr << reply << std::endl;
     return EXIT_FAILURE;
   }
   if (reply.compare("OK")!=0)
