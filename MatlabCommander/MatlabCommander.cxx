@@ -17,7 +17,6 @@ const std::string MATLAB_DEFAULT_HOST="127.0.0.1";
 const int MATLAB_DEFAULT_PORT=4100;
 
 const int MAX_MATLAB_STARTUP_TIME_SEC=60; // maximum time allowed for Matlab to start
-const int MAX_MATLAB_LAUNCHER_STARTUP_TIME_SEC=60; // maximum time allowed for Matlab launcher to start
 
 enum ExecuteMatlabCommandStatus
 {
@@ -68,7 +67,7 @@ bool StartMatlabServer()
 {
   const char* matlabExecutablePath=getenv("SLICER_MATLAB_EXECUTABLE_PATH");
   const char* matlabCommandServerScriptPath=getenv("SLICER_MATLAB_COMMAND_SERVER_SCRIPT_PATH");
-  
+
   if ( matlabExecutablePath == NULL )
   {
     std::cerr << "ERROR: The SLICER_MATLAB_EXECUTABLE_PATH environment variable is not set. Cannot start the Matlab command server." << std::endl;
@@ -123,103 +122,64 @@ bool StartMatlabServer()
     // Hide window
     vtksysProcess_SetOption(gp,vtksysProcess_Option_HideWindow, 1);
 
+    // Start a detached process, because we don't want to block the MatlabCommander if the started Matlab process does not exit
+    // (usually the Matlab process exits within a few seconds, but on some configurations it does not)
+    vtksysProcess_SetOption(gp, vtksysProcess_Option_Detach, 1);
+
     // Run the application
-    //std::cout << "Start Matlab process ..." << std::endl; 
     vtksysProcess_Execute(gp); 
 
-    double allowedTimeoutSec=MAX_MATLAB_LAUNCHER_STARTUP_TIME_SEC;
-    //std::cout << "Wait for exit (Timeout: " << allowedTimeoutSec << "s) ..." << std::endl; 
-    std::string buffer;     
-    double timeoutSec = allowedTimeoutSec; 
-    char* data = NULL;
-    int length=0;
+    vtksysProcess_Disown(gp);
 
-    int waitStatus=vtksysProcess_Pipe_None;
-    do
+    switch (vtksysProcess_GetState(gp))
     {
-      waitStatus=vtksysProcess_WaitForData(gp,&data,&length,&timeoutSec);
-      if (waitStatus==vtksysProcess_Pipe_Timeout)
-      {
-        std::cerr << "ERROR: Timeout (execution time > "<<allowedTimeoutSec<<"sec) while trying to execute the Matlab process"<< std::endl;
-      }
-      //std::cerr << "Matlab process start timeout remaining: "<<timeoutSec<<" length="<<length<<std::endl;
-      for(int i=0;i<length;i++)
-      {
-        buffer += data[i];
-      }
-      length=0;
-    }
-    while (waitStatus!=vtksysProcess_Pipe_None);         
-
-    if (vtksysProcess_WaitForExit(gp, &timeoutSec)==0)
-    {
-      // 0 = Child did not terminate 
-      std::cerr << "ERROR: Matlab process did not terminate within the specified timeout"<<std::endl;
-    }
-    //std::cout << "Matlab process execution time was: " << allowedTimeoutSec - timeoutSec << "sec" << std::endl; 
-
-    int result(0); 
-    switch ( vtksysProcess_GetState(gp) )
-    {
-    case vtksysProcess_State_Exited: 
-      {
-        result = vtksysProcess_GetExitValue(gp); 
-        if (result!=0)
-        {
-          std::cerr << "ERROR: Matlab process exited with code: " << result << std::endl;
-          std::cerr << "Matlab process output: " << buffer << std::endl;
-          success=false;
-        }
-      }
-      break; 
-    case vtksysProcess_State_Error: 
-      {
-        std::cerr << "ERROR: Error during Matlab process execution: " << vtksysProcess_GetErrorString(gp) << std::endl;
-        std::cerr << "Matlab process output: " << buffer << std::endl;
-        success=false;
-      }
+    case vtksysProcess_State_Disowned:
+      // This is the success case
+      std::cout << "Successfully detached from the started Matlab process" <<std::endl;
       break;
-    case vtksysProcess_State_Exception: 
-      {
-        std::cerr << "ERROR: Exception during Matlab process execution: " << vtksysProcess_GetExceptionString(gp) << std::endl;
-        std::cerr << "Matlab process output: " << buffer << std::endl;
-        success=false;
-      }
+    case vtksysProcess_State_Error:
+      // This is the most common error case (process could not be started)
+      std::cerr << "ERROR: Error starting the Matlab process: "<<matlabExecutablePath<<" ["<<vtksysProcess_GetErrorString(gp)<<"]" << std::endl;
+      success=false;
       break;
-    case vtksysProcess_State_Starting: 
+    case vtksysProcess_State_Starting:
+      std::cerr << "ERROR: No Matlab process ("<<matlabExecutablePath<<") has been executed." << std::endl; 
+      success=false;
+      break;
     case vtksysProcess_State_Executing:
-    case vtksysProcess_State_Expired: 
-      {
-        std::cerr << "ERROR: Unexpected ending state after Matlab process execution" << std::endl;
-        std::cerr << "Matlab process output: " << buffer << std::endl;
-        success=false;
-      }
+      std::cerr << "ERROR: The Matlab process ("<<matlabExecutablePath<<") is still executing." << std::endl; 
+      success=false;
       break;
-    case vtksysProcess_State_Killed: 
-      {
-        std::cerr << "ERROR: Matlab process killed" << std::endl;
-        std::cerr << "Matlab process output: " << buffer << std::endl;
-        success=false;
-      }
+    case vtksysProcess_State_Expired:
+      std::cerr << "ERROR: Matlab process ("<<matlabExecutablePath<<") was killed when timeout expired." <<std::endl; 
+      success=false;
+      break;
+    case vtksysProcess_State_Exited:
+      std::cerr << "ERROR: Matlab process ("<<matlabExecutablePath<<") exited with value = " << vtksysProcess_GetExitValue(gp) << std::endl; 
+      success=false;
+      break;
+    case vtksysProcess_State_Killed:
+      std::cerr << "ERROR: Matlab process ("<<matlabExecutablePath<<") was killed by parent." << std::endl; 
+      success=false;
+      break;
+    case vtksysProcess_State_Exception:
+      std::cerr << "ERROR: Matlab process ("<<matlabExecutablePath<<") terminated abnormally: " << vtksysProcess_GetExceptionString(gp) << std::endl; 
+      success=false;
+      break;
+    default:
+      std::cerr << "ERROR: Unknown error when trying to start the Matlab process ("<<matlabExecutablePath<<")"<<std::endl; 
+      success=false;
       break;
     }
-    
-    vtksysProcess_Delete(gp); 
+
   }
   catch (...)
   {
-    std::cerr << "ERROR: Unknown exception while trying to execute Matlab process" << std::endl; 
-    success=false;; 
+    std::cerr << "ERROR: Unknown exception while trying to execute Matlab process ("<<matlabExecutablePath<<")" << std::endl; 
+    success=false;
   }
-
-  if (!success)
-  {
-    std::cerr << "ERROR: Failed to execute Matlab process: "<<matlabExecutablePath<<std::endl;
-    return false;    
-  }
-
-  std::cout << "Matlab process start requested successfully" << std::endl;
-  return true;
+  
+  return success;
 }
 
 ExecuteMatlabCommandStatus ExecuteMatlabCommand(const std::string& hostname, int port, const std::string &cmd, std::string &reply)
@@ -251,7 +211,7 @@ ExecuteMatlabCommandStatus ExecuteMatlabCommand(const std::string& hostname, int
     }
     else
     {
-      std::cerr << "Failed to start Matlab process" << std::endl;
+      std::cerr << "ERROR: Failed to start Matlab process" << std::endl;
     }
   }
   if (connectErrorCode != 0)
@@ -421,7 +381,7 @@ int CallStandardCli(int argc, char * argv [])
     std::cerr << reply << std::endl;
     completed=false;
   }
-  
+
   // Remove newline characters, as it would confuse the return parameter file
   std::replace( reply.begin(), reply.end(), '\r', ' ');
   std::replace( reply.begin(), reply.end(), '\n', ' ');
