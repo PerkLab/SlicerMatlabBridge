@@ -180,7 +180,9 @@ end
 
 function data = adjustEndian(data, meta)
 
-[~,~,endian] = computer();
+% For ignoring unused parameters dummy variables (dummy1 and dummy2) are
+% used instead of ~ to maintain compatibility with Matlab R2009b version
+[dummy1,dummy2,endian] = computer();
 
 needToSwap = (isequal(endian, 'B') && isequal(lower(meta.endian), 'little')) || ...
              (isequal(endian, 'L') && isequal(lower(meta.endian), 'big'));

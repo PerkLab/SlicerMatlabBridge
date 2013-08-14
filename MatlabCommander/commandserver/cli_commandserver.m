@@ -245,7 +245,17 @@ end
 
 function result=convertFromUint8VectorToInt64(uint8Vector)
   multipliers = [256^7 256^6 256^5 256^4 256^3 256^2 256^1 1];
-  result = sum(int64(uint8Vector).*int64(multipliers));
+  % Matlab R2009b and earlier versions don't support int64 arithmetics.
+  int64arithmeticsSupported=~isempty(find(strcmp(methods('int64'),'mtimes')));
+  if int64arithmeticsSupported
+    % Full 64-bit arithmetics
+    result = sum(int64(uint8Vector).*int64(multipliers));
+  else
+    % Fall back to floating point arithmetics: compute result with floating
+    % point type and convert the end result to int64
+    % (it should be precise enough for realistic file sizes)
+    result = int64(sum(double(uint8Vector).*multipliers));
+  end  
 end 
 
 function selectedByte=getNthByte(multibyte, n)
