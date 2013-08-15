@@ -200,8 +200,16 @@ function data=ReadWithTimeout(clientSocket, requestedDataLength, timeoutSec)
     data=zeros(1,requestedDataLength,'uint8');
     signedDataByte=int8(0);
     bytesRead=0;
-    while(bytesRead<requestedDataLength)
-        bytesToRead=min(clientSocket.inputStream.available, requestedDataLength-bytesRead);
+    while(bytesRead<requestedDataLength)    
+        % Computing (requestedDataLength-bytesRead) is an int64 operation, which may not be available on Matlab R2009 and before
+        int64arithmeticsSupported=~isempty(find(strcmp(methods('int64'),'minus')));
+        if int64arithmeticsSupported
+            % Full 64-bit arithmetics
+            bytesToRead=min(clientSocket.inputStream.available, requestedDataLength-bytesRead);
+        else
+            % Fall back to floating point arithmetics
+            bytesToRead=min(clientSocket.inputStream.available, double(requestedDataLength)-double(bytesRead));
+        end  
         if (bytesRead==0 && bytesToRead>0)
             % starting to read message header
             tstart=tic;
@@ -245,7 +253,7 @@ end
 
 function result=convertFromUint8VectorToInt64(uint8Vector)
   multipliers = [256^7 256^6 256^5 256^4 256^3 256^2 256^1 1];
-  % Matlab R2009b and earlier versions don't support int64 arithmetics.
+  % Matlab R2009 and earlier versions don't support int64 arithmetics.
   int64arithmeticsSupported=~isempty(find(strcmp(methods('int64'),'mtimes')));
   if int64arithmeticsSupported
     % Full 64-bit arithmetics
