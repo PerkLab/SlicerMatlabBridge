@@ -105,7 +105,7 @@ bool StartMatlabServer()
     // run script after startup
     std::cout << " -r"; 
     command.push_back("-r");    
-    std::string startupCommand=std::string("run('")+matlabCommandServerScriptPath+"');";
+    std::string startupCommand=std::string("\"run('")+matlabCommandServerScriptPath+"');\"";
     std::cout << " " << startupCommand; 
     command.push_back(startupCommand.c_str());
 
