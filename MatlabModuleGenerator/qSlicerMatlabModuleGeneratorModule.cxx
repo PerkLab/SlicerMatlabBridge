@@ -81,20 +81,22 @@ qSlicerMatlabModuleGeneratorModule::~qSlicerMatlabModuleGeneratorModule()
 //-----------------------------------------------------------------------------
 QString qSlicerMatlabModuleGeneratorModule::helpText()const
 {
-  return "This is a loadable module bundled in an extension";
+  return "The MatlabModuleGenerator module is used for generating a skeleton Matlab module that the user can further customize to implement the intended functionality. The module also allows the user to specify the location of the Matlab executable.";
 }
 
 //-----------------------------------------------------------------------------
 QString qSlicerMatlabModuleGeneratorModule::acknowledgementText()const
 {
-  return "This work was was partially funded by NIH grant 3P41RR013218-12S1";
+  return "This work is part of the SparKit project, funded by An Applied Cancer Research Unit of Cancer Care Ontario with funds provided by the Ministry of Health and Long-Term Care and the Ontario Consortium for Adaptive Interventions in Radiation Oncology (OCAIRO) to provide free, open-source toolset for radiotherapy and related image-guided interventions.";
 }
 
 //-----------------------------------------------------------------------------
 QStringList qSlicerMatlabModuleGeneratorModule::contributors()const
 {
   QStringList moduleContributors;
+  moduleContributors << QString("Andras Lasso (PerkLab, Queen's University)");
   moduleContributors << QString("Jean-Christophe Fillion-Robin (Kitware)");
+  moduleContributors << QString("Kevin Wang (Radiation Medicine Program, Princess Margaret Hospital, University Health Network Toronto)");
   return moduleContributors;
 }
 

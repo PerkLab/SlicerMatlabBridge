@@ -2,12 +2,12 @@
 <executable>
   <category>Developer Tools.Matlab</category>
   <title>Matlab Commander</title>
-  <description>This module allows running Matlab commands from Slicer.</description>
-  <version>0.0</version>
-  <documentation-url>http://slicerrt.org</documentation-url>
-  <license>BSD-style</license>
-  <contributor>Please direct questions or suggestions to Andras Lasso</contributor>
-  <acknowledgements>SlicerRT</acknowledgements>
+  <description><![CDATA[This module allows running Matlab commands from Slicer. It may be necessary to manually add an exception to the firewall to allow Slicer to communicate with the Matlab server on port 4100.]]></description>
+  <version>0.8</version>
+  <documentation-url>http://www.slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/MatlabBridge</documentation-url>
+  <license>Slicer license</license>
+  <contributor>Andras Lasso (PerkLab, Queen's University), Jean-Christophe Fillion-Robin (Kitware), Kevin Wang (Radiation Medicine Program, Princess Margaret Hospital, University Health Network Toronto)</contributor>
+  <acknowledgements><![CDATA[This work is part of the SparKit project, funded by An Applied Cancer Research Unit of Cancer Care Ontario with funds provided by the Ministry of Health and Long-Term Care and the Ontario Consortium for Adaptive Interventions in Radiation Oncology (OCAIRO) to provide free, open-source toolset for radiotherapy and related image-guided interventions.]]></acknowledgements>
     <parameters>
     <label>Input</label>
     <description>Matlab command input</description>
