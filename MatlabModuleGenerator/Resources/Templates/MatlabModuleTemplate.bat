@@ -15,7 +15,7 @@ rem Print error messages if any of the required environment variables are not se
 if not defined SLICER_MATLAB_COMMANDER_PATH echo ERROR: SLICER_MATLAB_COMMANDER_PATH environment variable is not defined. Make sure you installed the MatlabBridge extension.
 if not defined SLICER_MATLAB_COMMAND_SERVER_SCRIPT_PATH echo ERROR: SLICER_MATLAB_COMMAND_SERVER_SCRIPT_PATH environment variable is not defined. Make sure you installed the MatlabBridge extension.
 if not defined SLICER_MATLAB_EXECUTABLE_PATH echo ERROR: SLICER_MATLAB_EXECUTABLE_PATH environment variable is not defined. Make sure you installed the MatlabBridge extension and set the path to the Matlab executable.
-rem Make the .bat file location to be the working directory (that's where the MatlabCommander.exe is)
+rem Make the .bat file location to be the working directory (this is where the .m file is located; in Matlab the current directory will be changed to this directory)
 pushd "%~dp0"
 rem Forward parameters to the Matlab CLI
 "%SLICER_HOME%/Slicer.exe" --launcher-no-splash --launch "%SLICER_MATLAB_COMMANDER_PATH%" --call-matlab-function %MODULE_NAME% %*
