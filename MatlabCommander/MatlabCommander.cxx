@@ -18,6 +18,10 @@ const int MATLAB_DEFAULT_PORT=4100;
 
 const int MAX_MATLAB_STARTUP_TIME_SEC=60; // maximum time allowed for Matlab to start
 
+// If the Matlab function response string starts with this string then it means
+// the function execution failed
+const std::string RESPONSE_ERROR_PREFIX="ERROR:";
+
 enum ExecuteMatlabCommandStatus
 {
   COMMAND_STATUS_FAILED=0,
@@ -354,9 +358,11 @@ int CallMatlabFunction(int argc, char * argv [])
     std::cerr << reply << std::endl;
     return EXIT_FAILURE;
   }
-  if (reply.compare("OK")!=0)
+  // Response is usually 'OK' (if the function did not have any output) or some printouts.
+  // In case of an error, the response starts with ERROR:...
+  if (reply.size()>RESPONSE_ERROR_PREFIX.size() && reply.compare(0,RESPONSE_ERROR_PREFIX.size(),RESPONSE_ERROR_PREFIX)==0)
   {
-    // reply is not OK
+    // the response starts with "ERROR:", so the execution failed
     std::cerr << "Failed to execute Matlab function: " << functionName << ", received the following error message: " << std::endl;
     std::cerr << reply << std::endl;
     return EXIT_FAILURE;
