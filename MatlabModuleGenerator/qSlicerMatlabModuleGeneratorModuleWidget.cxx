@@ -19,6 +19,9 @@
 #include <QDebug>
 #include <QSettings> 
 
+// VTK includes
+#include <vtkStdString.h>
+
 // SlicerQt includes
 #include "qSlicerMatlabModuleGeneratorModuleWidget.h"
 #include "ui_qSlicerMatlabModuleGeneratorModuleWidget.h"

@@ -19,9 +19,12 @@
 #include "vtkSlicerMatlabModuleGeneratorLogic.h"
 
 // MRML includes
+#include "vtkMRMLScene.h"
 
 // VTK includes
+#include <vtkIntArray.h>
 #include <vtkNew.h>
+#include <vtkObjectFactory.h>
 #include <vtksys/SystemTools.hxx>
 
 // STD includes
