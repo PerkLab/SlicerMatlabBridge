@@ -75,16 +75,17 @@ datatype = getDatatype(img.metaData.type);
 % Get the size of the data.
 assert(isfield(img.metaData, 'sizes') && ...
        isfield(img.metaData, 'dimension') && ...
-       isfield(img.metaData, 'encoding') && ...
-       isfield(img.metaData, 'endian'), ...
-       'Missing required metadata fields.')
+       isfield(img.metaData, 'encoding'), ...
+       'Missing required metadata fields (sizes, dimension, or encoding).')
 
 dims = sscanf(img.metaData.sizes, '%d');
 ndims = sscanf(img.metaData.dimension, '%d');
 assert(numel(dims) == ndims);
 
 data = readData(fid, img.metaData, datatype);
-data = adjustEndian(data, img.metaData);
+if isfield(img.metaData, 'endian')
+    data = adjustEndian(data, img.metaData);
+end
 
 img.pixelData = reshape(data, dims');
 
@@ -97,96 +98,74 @@ ijkOneBasedToLpsTransform=ijkZeroBasedToLpsTransform*ijkOneBasedToIjkZeroBasedTr
 % Use the one-based IJK transform (origin is at [1,1,1])
 img.ijkToLpsTransform=ijkOneBasedToLpsTransform;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function datatype = getDatatype(metaType)
-
 % Determine the datatype
 switch (metaType)
  case {'signed char', 'int8', 'int8_t'}
-  datatype = 'int8';
-  
+  datatype = 'int8';  
  case {'uchar', 'unsigned char', 'uint8', 'uint8_t'}
   datatype = 'uint8';
-
  case {'short', 'short int', 'signed short', 'signed short int', ...
        'int16', 'int16_t'}
   datatype = 'int16';
-  
  case {'ushort', 'unsigned short', 'unsigned short int', 'uint16', ...
        'uint16_t'}
   datatype = 'uint16';
-  
  case {'int', 'signed int', 'int32', 'int32_t'}
   datatype = 'int32';
-  
  case {'uint', 'unsigned int', 'uint32', 'uint32_t'}
   datatype = 'uint32';
-  
  case {'longlong', 'long long', 'long long int', 'signed long long', ...
        'signed long long int', 'int64', 'int64_t'}
   datatype = 'int64';
-  
  case {'ulonglong', 'unsigned long long', 'unsigned long long int', ...
        'uint64', 'uint64_t'}
   datatype = 'uint64';
-  
  case {'float'}
   datatype = 'single';
-  
  case {'double'}
   datatype = 'double';
-  
  otherwise
   assert(false, 'Unknown datatype')
 end
 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function data = readData(fidIn, meta, datatype)
 
 switch (meta.encoding)
  case {'raw'}
-  
   data = fread(fidIn, inf, [datatype '=>' datatype]);
-  
  case {'gzip', 'gz'}
-
+  % Create temporary file copy for GZIP uncompression
   tmpBase = tempname();
   tmpFile = [tmpBase '.gz'];
   fidTmp = fopen(tmpFile, 'wb');
-  assert(fidTmp > 3, 'Could not open temporary file for GZIP decompression')
-  
+  assert(fidTmp > 3, 'Could not open temporary file for GZIP decompression')  
   tmp = fread(fidIn, inf, 'uint8=>uint8');
   fwrite(fidTmp, tmp, 'uint8');
   fclose(fidTmp);
-  
+  % Uncompress
   gunzip(tmpFile)
-  
+  % Read uncompressed data
   fidTmp = fopen(tmpBase, 'rb');
-  cleaner = onCleanup(@() fclose(fidTmp));
-  
+  cleaner = onCleanup(@() fclose(fidTmp));  
   meta.encoding = 'raw';
-  data = readData(fidTmp, meta, datatype);
-  
- case {'txt', 'text', 'ascii'}
-  
+  data = readData(fidTmp, meta, datatype);  
+ case {'txt', 'text', 'ascii'}  
   data = fscanf(fidIn, '%f');
-  data = cast(data, datatype);
-  
+  data = cast(data, datatype);  
  otherwise
   assert(false, 'Unsupported encoding')
 end
 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function data = adjustEndian(data, meta)
-
 % For ignoring unused parameters dummy variables (dummy1 and dummy2) are
 % used instead of ~ to maintain compatibility with Matlab R2009b version
 [dummy1,dummy2,endian] = computer();
-
 needToSwap = (isequal(endian, 'B') && isequal(lower(meta.endian), 'little')) || ...
-             (isequal(endian, 'L') && isequal(lower(meta.endian), 'big'));
-         
+         (isequal(endian, 'L') && isequal(lower(meta.endian), 'big'));
 if (needToSwap)
-    data = swapbytes(data);
+data = swapbytes(data);
 end
