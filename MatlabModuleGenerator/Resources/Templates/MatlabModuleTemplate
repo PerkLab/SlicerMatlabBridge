@@ -1,7 +1,7 @@
 #!/bin/sh
 # If this proxy is called with the --xml parameter then just return the module decriptor XML file,
 # otherwise run the associated Matlab script.
-# MatlabBridge proxy version: 1.0
+# MatlabBridge proxy version: 1.1
 
 MODULE_NAME="MatlabModuleTemplate"
 
@@ -14,5 +14,12 @@ fi
 cd "$( dirname "$0" )"
 
 # Forward parameters to the Matlab CLI
-"$SLICER_HOME/Slicer" --launcher-no-splash --launch "$SLICER_MATLAB_COMMANDER_PATH" --call-matlab-function $MODULE_NAME $*
-exit $?
+if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  # Linux: use Slicer launcher
+  "$SLICER_HOME/Slicer" --launcher-no-splash --launch "$SLICER_MATLAB_COMMANDER_PATH" --call-matlab-function $MODULE_NAME $*
+  exit $?
+else
+  # Mac OS X: there is no launcher, so run the commander directly
+  "$SLICER_MATLAB_COMMANDER_PATH" --call-matlab-function $MODULE_NAME $*
+  exit $?
+fi
