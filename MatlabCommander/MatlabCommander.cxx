@@ -96,7 +96,7 @@ bool StartMatlabServer()
     std::vector<const char*> command;
     command.clear();
 
-    // Add gnuplot command 
+    // Compose Matlab launching command
     std::cout << "Starting Matlab server: " << matlabExecutablePath; 
     command.push_back(matlabExecutablePath);
 
