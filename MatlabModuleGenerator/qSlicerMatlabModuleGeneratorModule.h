@@ -52,6 +52,14 @@ public:
 
 protected:
 
+  /// Get location of the Matlab executable.
+  /// Search order:
+  /// \li Slicer.ini application settings
+  /// \li SLICER_MATLAB_EXECUTABLE_PATH environment variable
+  /// \li Path or App Paths
+  /// \li Hardcoded default location
+  QString getMatlabExecutablePath() const;
+
   /// Initialize the module. Register the volumes reader/writer
   virtual void setup();
 
