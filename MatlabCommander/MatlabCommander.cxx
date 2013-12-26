@@ -107,11 +107,20 @@ bool StartMatlabServer()
     // script directory (-sd) option does not work with the automation option, so need to use the run command to specify full script path
 
     // run script after startup
-    std::cout << " -r"; 
-    command.push_back("-r");    
-    std::string startupCommand=std::string("\"run('")+matlabCommandServerScriptPath+"');\"";
+#if defined( _WIN32 ) && !defined(__CYGWIN__) 
+    // Windows requires parameter and script name as two separate arguments
+    std::string startupCommand1=std::string("-r");
+    std::cout << " " << startupCommand1;
+    command.push_back(startupCommand1.c_str());
+    std::string startupCommand2=std::string("\"run('")+matlabCommandServerScriptPath+"');\"";
+    std::cout << " " << startupCommand2;
+    command.push_back(startupCommand2.c_str());
+#else
+    // Linux/Mac OS X requires parameter and script name as one argument
+    std::string startupCommand=std::string("-r \"run('")+matlabCommandServerScriptPath+"');\"";
     std::cout << " " << startupCommand; 
     command.push_back(startupCommand.c_str());
+#endif
 
     // The array must end with a NULL pointer.
     std::cout << std::endl;
@@ -126,13 +135,23 @@ bool StartMatlabServer()
     // Hide window
     vtksysProcess_SetOption(gp,vtksysProcess_Option_HideWindow, 1);
 
+#if defined( _WIN32 ) && !defined(__CYGWIN__) 
+    // No need to redirect process output on Windows
+#else
+    // Need to redirect the outputs to dev/null on Linux and Mac OS X,
+    // otherwise Matlab terminates right after it is started
+    vtksysProcess_SetPipeFile(gp, vtksysProcess_Pipe_STDOUT, "/dev/null");
+    vtksysProcess_SetPipeFile(gp, vtksysProcess_Pipe_STDERR, "/dev/null");
+#endif
+
     // Start a detached process, because we don't want to block the MatlabCommander if the started Matlab process does not exit
     // (usually the Matlab process exits within a few seconds, but on some configurations it does not)
     vtksysProcess_SetOption(gp, vtksysProcess_Option_Detach, 1);
 
     // Run the application
-    vtksysProcess_Execute(gp); 
+    vtksysProcess_Execute(gp);
 
+    // Release the application and let it run in the background
     vtksysProcess_Disown(gp);
 
     switch (vtksysProcess_GetState(gp))
