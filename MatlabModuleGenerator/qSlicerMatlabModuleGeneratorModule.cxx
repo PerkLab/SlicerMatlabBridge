@@ -42,7 +42,7 @@ const std::string MATLAB_COMMAND_SERVER_SCRIPT_NAME="cli_commandserver.m";
 #elif defined(__APPLE__)
   // Mac OS X
   static const std::string DEFAULT_MATLAB_PROCESS_PATH="/Applications/MATLAB_XXXXX.app/bin/matlab";
-#elif defined(__APPLE__)
+#else
   // Linux
   static const std::string DEFAULT_MATLAB_PROCESS_PATH="/usr/local/bin/matlab";
 #endif
