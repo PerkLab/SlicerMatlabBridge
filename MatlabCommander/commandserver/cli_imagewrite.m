@@ -11,6 +11,8 @@ fprintf(fid,'NRRD0004\n');
 fprintf(fid,'# Complete NRRD file format specification at:\n');
 fprintf(fid,'# http://teem.sourceforge.net/nrrd/format.html\n');
 
+img.metaData.sizes = num2str(size(img.pixelData));
+img.metaData.type = getMetaType(class(img.pixelData));
 metaDataCellArr = struct2cell(img.metaData);
 
 % Get string names for each field in the meta data
@@ -27,11 +29,6 @@ end
 fprintf(fid,'\n');
 
 % Write pixel data
-if (isfield(img.metaData,'type'))
-  % data type is specified in the metadata => convert the pixel data to that
-  datatype = getDatatype(img.metaData.type);
-  img.pixelData=cast(img.pixelData, datatype);
-end
 fwrite(fid, img.pixelData,class(img.pixelData));
 
 fclose('all');
@@ -48,33 +45,29 @@ function writeDataByType(fid, data)
     fprintf(fid,'\n');
   end
 
-function datatype = getDatatype(metaType)
-% Determine the datatype from the type string of the metadata
-switch (metaType)
- case {'signed char', 'int8', 'int8_t'}
-  datatype = 'int8';  
- case {'uchar', 'unsigned char', 'uint8', 'uint8_t'}
-  datatype = 'uint8';
- case {'short', 'short int', 'signed short', 'signed short int', ...
-       'int16', 'int16_t'}
-  datatype = 'int16';
- case {'ushort', 'unsigned short', 'unsigned short int', 'uint16', ...
-       'uint16_t'}
-  datatype = 'uint16';
- case {'int', 'signed int', 'int32', 'int32_t'}
-  datatype = 'int32';
- case {'uint', 'unsigned int', 'uint32', 'uint32_t'}
-  datatype = 'uint32';
- case {'longlong', 'long long', 'long long int', 'signed long long', ...
-       'signed long long int', 'int64', 'int64_t'}
-  datatype = 'int64';
- case {'ulonglong', 'unsigned long long', 'unsigned long long int', ...
-       'uint64', 'uint64_t'}
-  datatype = 'uint64';
- case {'float'}
-  datatype = 'single';
- case {'double'}
-  datatype = 'double';
- otherwise
-  assert(false, 'Unknown datatype')
-end 
+function metaType = getMetaType(matlabType)
+% Determine the metadata type from the Matlab type
+  switch (matlabType)
+   case {'int8'}
+    metaType = 'int8';  
+   case {'uint8'}
+    metaType = 'uint8';
+   case {'int16'}
+    metaType = 'int16';
+   case {'uint16'}
+    metaType = 'uint16';
+   case {'int32'}
+    metaType = 'int32';
+   case {'uint32'}
+    metaType = 'uint32';
+   case {'int64'}
+    metaType = 'int64';
+   case {'uint64'}
+    metaType = 'uint64';
+   case {'single'}
+    metaType = 'float';
+   case {'double'}
+    metaType = 'double';
+   otherwise
+    assert(false, 'Unsupported Matlab data type')
+  end 
