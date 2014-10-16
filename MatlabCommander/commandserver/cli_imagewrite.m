@@ -1,5 +1,6 @@
 function cli_imagewrite(outputFilename, img)
 % Function for writing pixel and meta data struct to a NRRD file
+% See input data format description in cli_imageread.m
 
 % Open file for writing
 fid=fopen(outputFilename, 'w');

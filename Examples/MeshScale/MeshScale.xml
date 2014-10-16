@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Matlab</category>
+  <title>Change model scale</title>
+  <description><![CDATA[Perform simple mesh processing in Matlab.]]></description>
+  <version>0.0.0.1</version>
+  <documentation-url>http://www.slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/MatlabBridge</documentation-url>
+  <license/>
+  <contributor>Andras Lasso (PerkLab)</contributor>
+  <acknowledgements><![CDATA[SparKit is a project funded by Cancer Care Ontarioand the Ontario Consortium for Adaptive Interventions in Radiation Oncology (OCAIRO) to provide free, open-source toolset for radiotherapy and related image-guided interventions.]]></acknowledgements>
+  <parameters>
+    <label>Inputs</label>
+    <description><![CDATA[Inputs for the processing]]></description>
+    <geometry fileExtensions=".stl" >
+      <label>Input model</label>
+      <description><![CDATA[Input triangular surface mesh]]></description>
+      <longflag>inputmesh</longflag>
+      <channel>input</channel>
+    </geometry>
+    <float>
+      <label>Scale X</label>
+      <description><![CDATA[X scale factor]]></description>
+      <longflag>scalex</longflag>
+      <default>1.5</default>
+      <constraints>
+        <minimum>0.1</minimum>
+        <maximum>10</maximum>
+        <step>0.1</step>
+      </constraints>      
+    </float>
+    <float>
+      <label>Scale Y</label>
+      <description><![CDATA[Y scale factor]]></description>
+      <longflag>scaley</longflag>
+      <default>1.0</default>
+      <constraints>
+        <minimum>0.1</minimum>
+        <maximum>10</maximum>
+        <step>0.1</step>
+      </constraints>      
+    </float>
+    <float>
+      <label>Scale Z</label>
+      <description><![CDATA[Z scale factor]]></description>
+      <longflag>scalez</longflag>
+      <default>0.8</default>
+      <constraints>
+        <minimum>0.1</minimum>
+        <maximum>10</maximum>
+        <step>0.1</step>
+      </constraints>      
+    </float>
+  </parameters>
+  <parameters>
+    <label>Output</label>    
+    <description><![CDATA[Computed output]]></description>
+    <geometry fileExtensions=".stl" >
+      <label>Output model</label>
+      <description><![CDATA[Transformed triangular surface mesh.]]></description>
+      <longflag>outputmesh</longflag>
+      <channel>output</channel>
+    </geometry>
+  </parameters>
+</executable>

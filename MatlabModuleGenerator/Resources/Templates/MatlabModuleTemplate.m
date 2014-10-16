@@ -39,11 +39,14 @@ cli_imagewrite(inputParams.outputvolume, img);
 %    value=cli_transformread(inputParams.name);
 %  measurement:
 %    value=cli_measurementread(inputParams.name);
+%  geometry:
+%    value=cli_geometryread(inputParams.name);
+%    Important: in the CLI definition file the following attribute shall be added to the geometry element: fileExtensions=".stl"
 %
 %  Notes:
-%    - Input and file (image, transform, measurement) parameter names are defined by the <longflag> element in the XML file
+%    - Input and file (image, transform, measurement, geometry) parameter names are defined by the <longflag> element in the XML file
 %    - Output parameter names are defined by the <name> element in the XML file
-%    - For retrieving indexth-th unnamed parameter use inputParams.unnamed{index+1} instead of inputParams.name
+%    - For retrieving index-th unnamed parameter use inputParams.unnamed{index+1} instead of inputParams.name
 %
 %
 % Writing output parameters
@@ -58,4 +61,7 @@ cli_imagewrite(inputParams.outputvolume, img);
 %    cli_transformwrite(inputParams.name, value);
 %  measurement:
 %    cli_measurementwrite(inputParams.name, value);
+%  geometry:
+%    cli_geometrywrite(inputParams.name, value);
+%    Important: in the CLI definition file the following attribute shall be added to the geometry element: fileExtensions=".stl"
 %

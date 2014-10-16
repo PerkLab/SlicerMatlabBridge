@@ -46,8 +46,8 @@ endif()
 
 file(GLOB SCRIPT_FILES 
   RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/commandserver"
-	"${CMAKE_CURRENT_SOURCE_DIR}/commandserver/cli_*.m"
-	) 
+	"${CMAKE_CURRENT_SOURCE_DIR}/commandserver/*.m"
+	)
 
 foreach(SCRIPT_FILE ${SCRIPT_FILES})
   configure_file(
