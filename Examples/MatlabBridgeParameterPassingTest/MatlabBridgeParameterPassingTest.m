@@ -8,6 +8,7 @@ function outputParams=MatlabBridgeParameterPassingTest(inputParams)
 %  inputParams.unnamed{2}: output image filename (value is 0 if below threshold, 100 if above threshold)
 %  outputParams.min: image minimum value
 %  outputParams.max: image maximum value
+%  etc.
 %
 
 % Read inputs
@@ -27,6 +28,7 @@ transformValue=cli_lineartransformread(inputParams.transform1)
 seedValue=inputParams.seed
 inputMeasurementFilenameValue=cli_measurementread(inputParams.inputFA)
 unnamedInputImageValue=cli_imageread(inputParams.unnamed{1});
+surfaceMeshValue=cli_geometryread(inputParams.inputSurfaceMesh);
 
 % Write outputs
 outputParams.anintegerreturn=integerValue*10;
@@ -37,7 +39,8 @@ outputParams.astringreturn=['the input was ' stringEnumerationValue];
 outputParams.anintegervectorreturn=floatVectorValue*2;
 outputParams.astringchoicereturn=stringEnumerationValue;
 
-cli_imagewrite(inputParams.image2, imageValue);
-cli_lineartransformwrite(inputParams.transform2,transformValue);
-cli_imagewrite(inputParams.unnamed{2},unnamedInputImageValue);
-cli_measurementwrite(inputParams.outputFA, [inputMeasurementFilenameValue; 1 2 0.2; 2 4 0.3; 3 5 0.2]);
+cli_imagewrite(inputParams.image2, imageValue); % Write the input image on the output unchanged
+cli_lineartransformwrite(inputParams.transform2,transformValue); % Write the input transform on the output unchanged
+cli_imagewrite(inputParams.unnamed{2},unnamedInputImageValue); % Write the input image on the output unchanged
+cli_measurementwrite(inputParams.outputFA, [inputMeasurementFilenameValue; 1 2 0.2; 2 4 0.3; 3 5 0.2]); % Write the input image on the output with a few extra numbers added
+cli_geometrywrite(inputParams.outputSurfaceMesh, surfaceMeshValue); % Write the input surface mesh on the output unchanged
