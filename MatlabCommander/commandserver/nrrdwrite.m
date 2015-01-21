@@ -13,6 +13,9 @@ function nrrdwrite(outputFilename, img)
 %   img.metaData: Contains the list of full NRRD field names for each
 %     metaData field name. All fields should be listed here that have a
 %     special character in their name (such as dot or space).
+%   img.metaDataFieldNames: Contains full names of metadata fields that cannot be used as Matlab field names because they contains
+%     special characters (space, dot, etc). Full field names are used for determining the field name to be used in the NRRD file
+%     from the Matlab metadata field name.
 %
 % Supports writing of 3D and 4D volumes.
 %

@@ -6,6 +6,9 @@ function img = nrrdread(filename)
 %   img.ijkToLpsTransform: pixel (IJK) to physical (LPS, assuming 'space' is 'left-posterior-superior')
 %     coordinate system transformation, the origin of the IJK coordinate system is (1,1,1) to match Matlab matrix indexing
 %   img.metaData: contains all the descriptive information in the image header
+%   img.metaDataFieldNames: Contains full names of metadata fields that cannot be used as Matlab field names because they contains
+%     special characters (space, dot, etc). Special characters in field names are replaced by underscore by default when the NRRD
+%     file is read. Full field names are used when writing the image to NRRD file.
 %
 %  Supports reading of 3D and 4D volumes.
 %
