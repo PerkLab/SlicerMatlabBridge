@@ -219,7 +219,7 @@ function data=ReadWithTimeout(clientSocket, requestedDataLength, timeoutSec)
             if signedDataByte>=0
                 data(i) = signedDataByte;
             else
-                data(i) = bitcmp(-signedDataByte,8)+1;
+                data(i) = typecast(int8(signedDataByte),'uint8');
             end
         end            
         bytesRead=bytesRead+bytesToRead;
