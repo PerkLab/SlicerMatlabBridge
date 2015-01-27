@@ -1,0 +1,6 @@
+function [major minor patch]=cli_version()
+% Returns MatlabBridge module version
+
+major = @MATLABBRIDGE_VERSION_MAJOR@
+minor = @MATLABBRIDGE_VERSION_MINOR@
+patch = @MATLABBRIDGE_VERSION_PATCH@

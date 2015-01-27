@@ -58,3 +58,12 @@ foreach(SCRIPT_FILE ${SCRIPT_FILES})
     FILES ${CMAKE_BINARY_DIR}/${Slicer_CLIMODULES_BIN_DIR}/commandserver/${SCRIPT_FILE}
     DESTINATION ${Slicer_INSTALL_CLIMODULES_BIN_DIR}/commandserver COMPONENT Runtime)
 endforeach()
+
+# Create (and install) version info function
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/commandserver/cli_version.m.in
+  ${CMAKE_BINARY_DIR}/${Slicer_CLIMODULES_BIN_DIR}/commandserver/cli_version.m)
+install(
+  FILES ${CMAKE_BINARY_DIR}/${Slicer_CLIMODULES_BIN_DIR}/commandserver/cli_version.m
+  DESTINATION ${Slicer_INSTALL_CLIMODULES_BIN_DIR}/commandserver COMPONENT Runtime)
