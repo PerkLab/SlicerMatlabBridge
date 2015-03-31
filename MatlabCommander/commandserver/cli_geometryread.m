@@ -1,5 +1,5 @@
 function geometry = cli_geometryread(filename)
-%cli_geometryread  Read geometry for the command-line interface module from file (in STL format) into LPS coordinate system
+%cli_geometryread  Read geometry for the command-line interface module from file (in PLY or STL format) into LPS coordinate system
 %
 %   geometry = cli_geometryread(filename) reads the mesh
 %
@@ -14,7 +14,12 @@ function geometry = cli_geometryread(filename)
 %     patch(g, 'FaceColor', 'red');
 %
 
-[v, f, n, c, stltitle] = stlread(filename);
+[pathstr,name,ext] = fileparts(filename);
+if (strcmpi(ext,'.stl'))
+  [v, f, n, c, stltitle] = stlread(filename);
+else
+  [v, f] = read_ply(filename);
+end
 
 geometry.vertices = v;
 geometry.faces = f;

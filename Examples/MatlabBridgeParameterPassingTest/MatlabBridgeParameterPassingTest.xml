@@ -115,6 +115,18 @@
       <longflag>image2</longflag>
       <channel>output</channel>
     </image>
+    <geometry fileExtensions=".ply" >
+      <label>Input model</label>      
+      <description><![CDATA[An input model]]></description>
+      <longflag>model1</longflag>
+      <channel>input</channel>
+    </geometry>
+    <geometry fileExtensions=".ply" >
+      <label>Output model</label>      
+      <description><![CDATA[An input model]]></description>
+      <longflag>model2</longflag>
+      <channel>output</channel>
+    </geometry>
     <transform type="linear" fileExtensions=".txt">
       <label>Input transform</label>
       <description><![CDATA[An input transform]]></description>

@@ -11,7 +11,7 @@
   <parameters>
     <label>Inputs</label>
     <description><![CDATA[Inputs for the processing]]></description>
-    <geometry fileExtensions=".stl" >
+    <geometry fileExtensions=".ply" >
       <label>Input model</label>
       <description><![CDATA[Input triangular surface mesh]]></description>
       <longflag>inputmesh</longflag>
@@ -54,7 +54,7 @@
   <parameters>
     <label>Output</label>    
     <description><![CDATA[Computed output]]></description>
-    <geometry fileExtensions=".stl" >
+    <geometry fileExtensions=".ply" >
       <label>Output model</label>
       <description><![CDATA[Transformed triangular surface mesh.]]></description>
       <longflag>outputmesh</longflag>

@@ -37,11 +37,19 @@ cli_imagewrite(inputParams.outputvolume, img);
 %    value=cli_lineartransformread(inputParams.name);
 %   or (for generic transforms):
 %    value=cli_transformread(inputParams.name);
+%  point:
+%    values_LPS=cli_pointvectordecode(inputParams.name);
+%    [pointDim pointCount]=size(values_LPS);
+%  region:
+%    values=cli_pointvectordecode(inputParams.name);
+%    [regionDim regionCount]=size(values_LPS);
+%    center_LPS=[values(1:3,regionIndex); 1];
+%    radius_LPS=abs([values(4:6,regionIndex); 1]);
 %  measurement:
 %    value=cli_measurementread(inputParams.name);
 %  geometry:
 %    value=cli_geometryread(inputParams.name);
-%    Important: in the CLI definition file the following attribute shall be added to the geometry element: fileExtensions=".stl"
+%    Important: in the CLI definition file the following attribute shall be added to the geometry element: fileExtensions=".ply"
 %    See https://subversion.assembla.com/svn/slicerrt/trunk/MatlabBridge/src/Examples/MeshScale/ for a complete example.
 %
 %  Notes:
