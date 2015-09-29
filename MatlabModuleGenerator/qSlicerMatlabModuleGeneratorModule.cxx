@@ -131,7 +131,13 @@ QString qSlicerMatlabModuleGeneratorModule::getMatlabExecutablePath() const
   QString matlabExecutablePath = settings.value("Matlab/MatlabExecutablePath","").toString(); 
   if (!matlabExecutablePath.isEmpty())
   {
-    return matlabExecutablePath;
+    QFileInfo checkFile(matlabExecutablePath);
+    if (checkFile.exists() && checkFile.isFile())
+    {
+      qDebug("Matlab executable found in Slicer settings: %s", qPrintable(matlabExecutablePath));
+      return matlabExecutablePath;
+    }
+    qDebug("Matlab executable is defined in Slicer settings (%s), but the file is not found.", qPrintable(matlabExecutablePath));
   }
 
   // 2. SLICER_MATLAB_EXECUTABLE_PATH environment variable
@@ -139,27 +145,47 @@ QString qSlicerMatlabModuleGeneratorModule::getMatlabExecutablePath() const
   const char* matlabExePathEnvValue=getenv("SLICER_MATLAB_EXECUTABLE_PATH");
   if (matlabExePathEnvValue && strlen(matlabExePathEnvValue)>0)
   {
+    qDebug("Matlab executable found in environment at %s", qPrintable(matlabExePathEnvValue));
     return QString(matlabExePathEnvValue);
   }
 
   // 3. App Paths
 #if defined( _WIN32 ) && !defined(__CYGWIN__)
   QSettings matlabExePathRegistryKey("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\matlab.exe",QSettings::NativeFormat);
-  QString matlabExePathRegistryValue=matlabExePathRegistryKey.value(".", NULL).toString(); // "." reads the (Default) value
-  if (!matlabExePathRegistryValue.isEmpty())
+  QString matlabExePathWin=matlabExePathRegistryKey.value(".", NULL).toString(); // "." reads the (Default) value
+  if (!matlabExePathWin.isEmpty())
   {
-    return matlabExePathRegistryValue;
+    qDebug("Matlab executable found on system at %s", qPrintable(matlabExePathWin));
+    return matlabExePathWin;
+  }
+#elif defined(__APPLE__)
+  QString appPath("/Applications");
+  QDir appDir(appPath);
+  QStringList nameFilter("MATLAB*.app");
+  QStringList matlabAppPaths = appDir.entryList(nameFilter);
+  if(!matlabAppPaths.isEmpty())
+  {
+      QString matlabAppPath = matlabAppPaths.at(0); //take the first one found
+      QString matlabExePathMac = appPath + "/" + matlabAppPath + "/bin/matlab";
+      QFileInfo matlabExeFileMac(matlabExePathMac);
+      if (matlabExeFileMac.exists() && matlabExeFileMac.isFile())
+      {
+        qDebug() << "Matlab executable found on system at : " << matlabExePathMac;
+        return matlabExePathMac;
+      }
   }
 #else
   std::vector<std::string> hints;
-  std::string foundMatlabPath = vtksys::SystemTools::FindProgram("matlab", hints, false); // false: search system path
-  if (!foundMatlabPath.empty())
+  std::string matlabExePathUnix = vtksys::SystemTools::FindProgram("matlab", hints, false); // false: search system path
+  if (!matlabExePathUnix.empty())
   {
-    return QString(foundMatlabPath.c_str());
+    qDebug("Matlab executable found on system at %s", qPrintable(matlabExePathUnix));
+    return QString(matlabExePathUnix.c_str());
   }
 #endif
 
   // 4. Hardcoded default string
+  qDebug("MatlabExecutablePath not found, default path used: %s", qPrintable(DEFAULT_MATLAB_PROCESS_PATH.c_str()));
   return QString(DEFAULT_MATLAB_PROCESS_PATH.c_str());
 }
 
