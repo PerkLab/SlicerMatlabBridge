@@ -147,9 +147,11 @@ const char* vtkSlicerMatlabModuleGeneratorLogic
 
 //---------------------------------------------------------------------------
 const char* vtkSlicerMatlabModuleGeneratorLogic
-::GenerateModule(const char* inputModuleName)
+::GenerateModule(const char* inputModuleName, vtkStdString& interfaceDefinitionFilename, vtkStdString& matlabFunctionFilename)
 {  
   this->GenerateModuleResult.clear();
+  interfaceDefinitionFilename.clear();
+  matlabFunctionFilename.clear();
 
   std::string fullModuleName=inputModuleName; // module name, including spaces  
   std::string moduleNameNoSpaces=inputModuleName; // module name without spaces
@@ -167,18 +169,23 @@ const char* vtkSlicerMatlabModuleGeneratorLogic
   } 
  
   // Matlab .m file
+
+  matlabFunctionFilename = targetDir+"/"+moduleNameNoSpaces+MODULE_SCRIPT_TEMPLATE_EXTENSION;
   if (!CreateFileFromTemplate(this->GetModuleShareDirectory()+"/"+TEMPLATE_NAME+MODULE_SCRIPT_TEMPLATE_EXTENSION,
-    targetDir+"/"+moduleNameNoSpaces+MODULE_SCRIPT_TEMPLATE_EXTENSION, TEMPLATE_NAME, moduleNameNoSpaces, result))
+    matlabFunctionFilename, TEMPLATE_NAME, moduleNameNoSpaces, result))
   {
     success=false;
+    matlabFunctionFilename.clear();
   }
   this->GenerateModuleResult+=result+"\n";
 
   // Module description .xml file
+  interfaceDefinitionFilename = targetDir+"/"+moduleNameNoSpaces+MODULE_DEFINITION_TEMPLATE_EXTENSION;
   if (!CreateFileFromTemplate(this->GetModuleShareDirectory()+"/"+TEMPLATE_NAME+MODULE_DEFINITION_TEMPLATE_EXTENSION,
-    targetDir+"/"+moduleNameNoSpaces+MODULE_DEFINITION_TEMPLATE_EXTENSION, TEMPLATE_NAME, fullModuleName, result))
+    interfaceDefinitionFilename, TEMPLATE_NAME, fullModuleName, result))
   {
     success=false;
+    interfaceDefinitionFilename.clear();
   }
   this->GenerateModuleResult+=result+"\n";
 

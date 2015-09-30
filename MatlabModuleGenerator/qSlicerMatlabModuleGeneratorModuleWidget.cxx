@@ -17,7 +17,9 @@
 
 // Qt includes
 #include <QDebug>
+#include <QDesktopServices>
 #include <QSettings> 
+#include <QUrl>
 
 // VTK includes
 #include <vtkStdString.h>
@@ -25,6 +27,7 @@
 // SlicerQt includes
 #include "qSlicerMatlabModuleGeneratorModuleWidget.h"
 #include "ui_qSlicerMatlabModuleGeneratorModuleWidget.h"
+#include "qSlicerApplication.h"
 
 // Module includes
 #include "vtkSlicerMatlabModuleGeneratorLogic.h"
@@ -37,6 +40,8 @@ class qSlicerMatlabModuleGeneratorModuleWidgetPrivate: public Ui_qSlicerMatlabMo
   Q_DECLARE_PUBLIC(qSlicerMatlabModuleGeneratorModuleWidget);
 protected:
   qSlicerMatlabModuleGeneratorModuleWidget* const q_ptr;
+  vtkStdString lastInterfaceDefinitionFilename;
+  vtkStdString lastMatlabFunctionFilename;
 public:
   qSlicerMatlabModuleGeneratorModuleWidgetPrivate(qSlicerMatlabModuleGeneratorModuleWidget& object);
   vtkSlicerMatlabModuleGeneratorLogic* logic() const;
@@ -85,6 +90,10 @@ void qSlicerMatlabModuleGeneratorModuleWidget::setup()
 
   connect( d->pushButton_GenerateModule, SIGNAL(clicked()), this, SLOT(generateModuleClicked()) );
 
+  connect( d->pushButton_EditInterfaceDefinition, SIGNAL(clicked()), this, SLOT(editInterfaceDefinitionClicked()) );
+  connect( d->pushButton_EditMatlabFunction, SIGNAL(clicked()), this, SLOT(editMatlabFunctionClicked()) );
+  connect( d->pushButton_RestartApplication, SIGNAL(clicked()), this, SLOT(restartApplicationClicked()) );
+
   d->lineEdit_MatlabExecutablePath->setCurrentPath(d->logic()->GetMatlabExecutablePath());
   d->lineEdit_MatlabScriptDirectory->setText(d->logic()->GetMatlabModuleDirectory());
 }
@@ -105,6 +114,32 @@ void qSlicerMatlabModuleGeneratorModuleWidget::generateModuleClicked()
 {
   Q_D(qSlicerMatlabModuleGeneratorModuleWidget);
   QString moduleName=d->lineEdit_GeneratorModuleName->text();
-  vtkStdString result=d->logic()->GenerateModule(moduleName.toLatin1());
+  vtkStdString result=d->logic()->GenerateModule(moduleName.toLatin1(), d->lastInterfaceDefinitionFilename, d->lastMatlabFunctionFilename);
   d->textEdit_GeneratorResults->setText(QString(result));
+
+  d->pushButton_EditInterfaceDefinition->setEnabled(!d->lastInterfaceDefinitionFilename.empty());
+  d->pushButton_EditMatlabFunction->setEnabled(!d->lastMatlabFunctionFilename.empty());
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerMatlabModuleGeneratorModuleWidget::editInterfaceDefinitionClicked()
+{
+  Q_D(qSlicerMatlabModuleGeneratorModuleWidget);
+  QString filename = QString::fromLatin1("file:///")+QString::fromLatin1(d->lastInterfaceDefinitionFilename);
+  QDesktopServices::openUrl(QUrl(filename, QUrl::TolerantMode));
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerMatlabModuleGeneratorModuleWidget::editMatlabFunctionClicked()
+{
+  Q_D(qSlicerMatlabModuleGeneratorModuleWidget);
+  QString filename = QString::fromLatin1("file:///")+QString::fromLatin1(d->lastMatlabFunctionFilename);
+  QDesktopServices::openUrl(QUrl(filename, QUrl::TolerantMode));
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerMatlabModuleGeneratorModuleWidget::restartApplicationClicked()
+{
+  Q_D(qSlicerMatlabModuleGeneratorModuleWidget);
+  qSlicerApplication::application()->confirmRestart();
 }

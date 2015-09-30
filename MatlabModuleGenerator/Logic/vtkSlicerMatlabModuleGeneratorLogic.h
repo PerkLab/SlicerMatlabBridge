@@ -64,7 +64,7 @@ public:
   void SetMatlabExecutablePath(const char* matlabExePath);
 
   /// Generates and installs a Matlab module and returns the status
-  const char* GenerateModule(const char* moduleName);
+  const char* GenerateModule(const char* moduleName, vtkStdString& interfaceDefinitionFilename, vtkStdString& matlabFunctionFilename);
 
 protected:
   vtkSlicerMatlabModuleGeneratorLogic();
