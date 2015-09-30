@@ -13,6 +13,7 @@
 #include "vtksys/Process.h"
 
 const std::string CALL_MATLAB_FUNCTION_ARG="--call-matlab-function";
+const std::string EXIT_MATLAB_ARG="--exit-matlab";
 const std::string MATLAB_DEFAULT_HOST="127.0.0.1";
 const int MATLAB_DEFAULT_PORT=4100;
 
@@ -205,13 +206,11 @@ bool StartMatlabServer()
   return success;
 }
 
-ExecuteMatlabCommandStatus ExecuteMatlabCommand(const std::string& hostname, int port, const std::string &cmd, std::string &reply)
+ExecuteMatlabCommandStatus ExecuteMatlabCommand(const std::string& hostname, int port, const std::string &cmd, std::string &reply, int receiveTimeoutMsec = 0)
 {
   //------------------------------------------------------------
   // Establish Connection
-  igtl::ClientSocket::Pointer socket;
-  socket = igtl::ClientSocket::New();
-
+  igtl::ClientSocket::Pointer socket = igtl::ClientSocket::New();
   int connectErrorCode = socket->ConnectToServer(hostname.c_str(), port);
   if (connectErrorCode!=0)
   {
@@ -268,6 +267,10 @@ ExecuteMatlabCommandStatus ExecuteMatlabCommand(const std::string& hostname, int
   // Initialize receive buffer
   headerMsg->InitPack();
   // Receive generic header from the socket
+  if (receiveTimeoutMsec>0)
+  {
+    socket->SetReceiveTimeout(receiveTimeoutMsec); // timeout in msec
+  }
   int receivedBytes = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
   if (receivedBytes == 0)
   {
@@ -299,6 +302,44 @@ ExecuteMatlabCommandStatus ExecuteMatlabCommand(const std::string& hostname, int
 
   return COMMAND_STATUS_SUCCESS;
 }
+
+int ExitMatlab()
+{
+  igtl::ClientSocket::Pointer socket = igtl::ClientSocket::New();
+  int connectErrorCode = socket->ConnectToServer(MATLAB_DEFAULT_HOST.c_str(), MATLAB_DEFAULT_PORT);
+  if (connectErrorCode!=0)
+  {
+    // The server has not been started, nothing to do
+    std::cout << "Matlab process is already stopped" << std::endl;
+    return EXIT_SUCCESS;
+  }
+
+  std::string cmd = "exit";
+
+  //------------------------------------------------------------
+  // Send command
+  igtl::StringMessage::Pointer stringMsg;
+  stringMsg = igtl::StringMessage::New();
+  stringMsg->SetDeviceName("CMD");
+  std::cout << "Sending string: " << cmd << std::endl;
+  stringMsg->SetString(cmd.c_str());
+  stringMsg->Pack();
+  socket->SetSendTimeout(5000); // timeout in msec
+  if (!socket->Send(stringMsg->GetPackPointer(), stringMsg->GetPackSize()))
+  {
+    // Failed to send the message
+    std::cerr << "Failed to send message to Matlab process" << std::endl;
+    socket->CloseSocket();
+    return COMMAND_STATUS_FAILED;
+  }
+
+  // Close connection
+  socket->CloseSocket();
+
+  std::cout << "Matlab process exit requested" << std::endl;
+  return EXIT_SUCCESS;  
+}
+
 
 int CallMatlabFunction(int argc, char * argv [])
 {
@@ -421,6 +462,11 @@ int main (int argc, char * argv [])
   {
     // MatlabCommander is called with arguments: --call-matlab-function function_name parameter1 parameter2 ...
     return CallMatlabFunction(argc, argv);
+  }
+  else if (argc==2 && EXIT_MATLAB_ARG.compare(argv[1])==0)
+  {
+    // MatlabCommander is called with arguments: --exit-matlab
+    return ExitMatlab();
   }
   else
   {
