@@ -56,5 +56,13 @@
       <default>4100</default>
       <longflag>--port</longflag>
     </integer>
+    <boolean>
+      <name>exitmatlab</name>
+      <description><![CDATA[If enabled then Matlab server will be stopped after the command is executed.]]></description>
+      <label>Exit Matlab after completion</label>
+      <default>False</default>
+      <flag>--q</flag>
+      <longflag>--exitmatlab</longflag>
+    </boolean>
   </parameters>
 </executable>

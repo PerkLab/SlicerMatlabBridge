@@ -436,23 +436,41 @@ int CallMatlabFunction(int argc, char * argv [])
 int CallStandardCli(int argc, char * argv [])
 {
   PARSE_ARGS;
-  ExecuteMatlabCommandStatus status=ExecuteMatlabCommand(hostname, port, cmd, reply);
-  if (status==COMMAND_STATUS_SUCCESS)
+
+  if (!cmd.empty())
   {
-    std::cout << reply << std::endl;
-    completed=true;
+    // Execute command
+    ExecuteMatlabCommandStatus status=ExecuteMatlabCommand(hostname, port, cmd, reply);
+    if (status==COMMAND_STATUS_SUCCESS)
+    {
+      std::cout << reply << std::endl;
+      completed=true;
+    }
+    else
+    {
+      std::cerr << reply << std::endl;
+      completed=false;
+    }
+
+    // Remove newline characters, as it would confuse the return parameter file
+    std::replace( reply.begin(), reply.end(), '\r', ' ');
+    std::replace( reply.begin(), reply.end(), '\n', ' ');
   }
   else
   {
-    std::cerr << reply << std::endl;
-    completed=false;
+    // Empty command, for example when we just want to exit Matlab
+    reply.clear();
+    completed = true;
+  }
+  
+  SetReturnValues(returnParameterFile,reply.c_str(),completed);
+
+  // Exit Matlab
+  if (exitmatlab == true)
+  {
+    return ExitMatlab();
   }
 
-  // Remove newline characters, as it would confuse the return parameter file
-  std::replace( reply.begin(), reply.end(), '\r', ' ');
-  std::replace( reply.begin(), reply.end(), '\n', ' ');
-
-  SetReturnValues(returnParameterFile,reply.c_str(),completed);    
   return EXIT_SUCCESS; // always return with EXIT_SUCCESS, otherwise Slicer ignores the return values and we cannot show the reply on the module GUI
 }
 
