@@ -28,6 +28,9 @@
 #include "qSlicerMatlabModuleGeneratorModuleWidget.h"
 #include "ui_qSlicerMatlabModuleGeneratorModuleWidget.h"
 #include "qSlicerApplication.h"
+#include "qSlicerModuleManager.h"
+#include "qSlicerAbstractCoreModule.h"
+#include <vtkSlicerCLIModuleLogic.h>
 
 // Module includes
 #include "vtkSlicerMatlabModuleGeneratorLogic.h"
@@ -86,7 +89,24 @@ void qSlicerMatlabModuleGeneratorModuleWidget::setup()
   d->setupUi(this);
   this->Superclass::setup();
 
-  connect( d->lineEdit_MatlabExecutablePath, SIGNAL(currentPathChanged(QString)), this, SLOT(matlabExecutablePathChanged(QString)) ); 
+  // Determine the value of Matlab/ExitMatlab in QSettings
+  // and set checkbox_ExitMatlab accordingly
+  QSettings settings;
+  if (settings.contains("Matlab/ExitMatlabOnApplicationExit"))
+  {
+    bool exitMatlab = settings.value("Matlab/ExitMatlabOnApplicationExit").toBool();
+    d->checkBox_ExitMatlab->setChecked(exitMatlab);
+  }
+  else
+  {
+    d->checkBox_ExitMatlab->setChecked(true);
+    settings.setValue("Matlab/ExitMatlabOnApplicationExit",true);
+  }
+
+  connect( QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(applicationAboutToQuit()) );
+
+  connect( d->lineEdit_MatlabExecutablePath, SIGNAL(currentPathChanged(QString)), this, SLOT(matlabExecutablePathChanged(QString)) );
+  connect( d->checkBox_ExitMatlab, SIGNAL(stateChanged(int)), this, SLOT(exitMatlabChanged(int)) );
 
   connect( d->pushButton_GenerateModule, SIGNAL(clicked()), this, SLOT(generateModuleClicked()) );
 
@@ -99,14 +119,50 @@ void qSlicerMatlabModuleGeneratorModuleWidget::setup()
 }
 
 //-----------------------------------------------------------------------------
+void qSlicerMatlabModuleGeneratorModuleWidget::applicationAboutToQuit()
+{
+  bool exitMatlab = true;
+  QSettings settings;
+  if (settings.contains("Matlab/ExitMatlabOnApplicationExit"))
+  {
+    exitMatlab = settings.value("Matlab/ExitMatlabOnApplicationExit").toBool();
+  }
+  if (exitMatlab)
+  {
+    qDebug("Shutting down Matlab");
+    qSlicerModuleManager* moduleManager = qSlicerApplication::application()->moduleManager();
+    qSlicerAbstractCoreModule* matlabCommanderModule = moduleManager->module("MatlabCommander");
+    if (matlabCommanderModule)
+    {
+      vtkSlicerCLIModuleLogic* matlabCommanderLogic = vtkSlicerCLIModuleLogic::SafeDownCast(matlabCommanderModule->logic());
+      vtkMRMLCommandLineModuleNode* cmdNode = matlabCommanderLogic->CreateNodeInScene();
+      cmdNode->SetParameterAsBool("exitmatlab", true);
+      matlabCommanderLogic->ApplyAndWait(cmdNode);
+    }
+    else
+    {
+      qWarning("MatlabCommander module is not found");
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
 void qSlicerMatlabModuleGeneratorModuleWidget::matlabExecutablePathChanged(QString path)
 {
   Q_D(qSlicerMatlabModuleGeneratorModuleWidget);
-  
+
   QSettings settings;
-  settings.setValue("Matlab/MatlabExecutablePath",path); 
+  settings.setValue("Matlab/MatlabExecutablePath",path);
 
   d->logic()->SetMatlabExecutablePath(path.toLatin1());
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerMatlabModuleGeneratorModuleWidget::exitMatlabChanged(int state)
+{
+  Q_D(qSlicerMatlabModuleGeneratorModuleWidget);
+  QSettings settings;
+  settings.setValue("Matlab/ExitMatlabOnApplicationExit",state==Qt::Checked);
 }
 
 //-----------------------------------------------------------------------------

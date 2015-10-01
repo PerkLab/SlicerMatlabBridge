@@ -42,13 +42,15 @@ public slots:
 
 protected slots:
 
+  void applicationAboutToQuit();
+
   void matlabExecutablePathChanged(QString path);
+  void exitMatlabChanged(int state);
   void generateModuleClicked();
 
   void editInterfaceDefinitionClicked();
   void editMatlabFunctionClicked();
   void restartApplicationClicked();
-
 
 protected:
   QScopedPointer<qSlicerMatlabModuleGeneratorModuleWidgetPrivate> d_ptr;

@@ -31,6 +31,13 @@
        <widget class="ctkPathLineEdit" name="lineEdit_MatlabExecutablePath"/>
       </item>
       <item>
+       <widget class="QCheckBox" name="checkBox_ExitMatlab">
+        <property name="text">
+         <string>Exit Matlab on Application Exit</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>Matlab script directory</string>
