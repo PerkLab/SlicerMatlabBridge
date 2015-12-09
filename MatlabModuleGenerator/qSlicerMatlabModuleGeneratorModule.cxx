@@ -179,7 +179,7 @@ QString qSlicerMatlabModuleGeneratorModule::getMatlabExecutablePath() const
   std::string matlabExePathUnix = vtksys::SystemTools::FindProgram("matlab", hints, false); // false: search system path
   if (!matlabExePathUnix.empty())
   {
-    qDebug("Matlab executable found on system at %s", qPrintable(matlabExePathUnix));
+    qDebug("Matlab executable found on system at %s", qPrintable(matlabExePathUnix.c_str()));
     return QString(matlabExePathUnix.c_str());
   }
 #endif
