@@ -37,6 +37,11 @@ cli_imagewrite(inputParams.outputvolume, img);
 %    value=cli_lineartransformread(inputParams.name);
 %   or (for generic transforms):
 %    value=cli_transformread(inputParams.name);
+%  pointfile:
+%    points=cli_pointfileread(inputParams.name);
+%    [pointDim pointCount]=size(points.position);
+%    Difference between pointfile and point is that pointfile can transfer point properties, such as visibility and
+%    selected state and works faster and more reliably if there are many points.
 %  point:
 %    values_LPS=cli_pointvectordecode(inputParams.name);
 %    [pointDim pointCount]=size(values_LPS);
@@ -70,6 +75,8 @@ cli_imagewrite(inputParams.outputvolume, img);
 %    cli_transformwrite(inputParams.name, value);
 %  measurement:
 %    cli_measurementwrite(inputParams.name, value);
+%  pointfile:
+%    cli_pointfilewrite(inputParams.name, points);
 %  geometry:
 %    cli_geometrywrite(inputParams.name, value);
 %    Important: in the CLI definition file the following attribute shall be added to the geometry element: fileExtensions=".stl"
