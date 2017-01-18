@@ -157,7 +157,7 @@ switch (meta.encoding)
   try
     data = zlib_decompress(compressedData,datatype);
   catch noMemory
-    disp('Not enough Java heap space (it can be increased in Matlab preferences)');
+    error('Not enough Java heap space (it can be increased in Matlab preferences)');
     return;
   end
  case {'txt', 'text', 'ascii'}  
