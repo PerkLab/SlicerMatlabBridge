@@ -55,7 +55,7 @@ cli_imagewrite(inputParams.outputvolume, img);
 %  geometry:
 %    value=cli_geometryread(inputParams.name);
 %    Important: in the CLI definition file the following attribute shall be added to the geometry element: fileExtensions=".ply"
-%    See https://subversion.assembla.com/svn/slicerrt/trunk/MatlabBridge/src/Examples/MeshScale/ for a complete example.
+%    See https://github.com/PerkLab/SlicerMatlabBridge/tree/master/Examples/MeshScale for a complete example.
 %
 %  Notes:
 %    - Input and file (image, transform, measurement, geometry) parameter names are defined by the <longflag> element in the XML file
@@ -80,5 +80,5 @@ cli_imagewrite(inputParams.outputvolume, img);
 %  geometry:
 %    cli_geometrywrite(inputParams.name, value);
 %    Important: in the CLI definition file the following attribute shall be added to the geometry element: fileExtensions=".stl"
-%    See https://subversion.assembla.com/svn/slicerrt/trunk/MatlabBridge/src/Examples/MeshScale/ for a complete example.
+%    See https://github.com/PerkLab/SlicerMatlabBridge/tree/master/Examples/MeshScale for a complete example.
 %
