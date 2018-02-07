@@ -18,6 +18,7 @@ function nrrdwrite(outputFilename, img)
 %     from the Matlab metadata field name.
 %
 % Supports writing of 3D and 4D volumes.
+% 2D pixelData is written as single-slice 3D volume.
 %
 % Examples:
 %
@@ -63,11 +64,20 @@ fprintf(fid,'# http://teem.sourceforge.net/nrrd/format.html\n');
 % Create/override mandatory fields
 
 img.metaData.type = getMetaType(class(img.pixelData));
-img.metaData.dimension = length(size(img.pixelData)); % ndim is not defined for int16 arrays
+
 if ~isfield(img.metaData,'space')
   img.metaData.space = 'left-posterior-superior';
 end
-img.metaData.sizes=num2str(size(img.pixelData));
+
+img.metaData.dimension = length(size(img.pixelData)); % ndim is not defined for int16 arrays
+
+% 2D image is be written as single-slice 3D volume
+if img.metaData.dimension == 2
+    img.metaData.dimension = 3;
+    img.metaData.sizes=num2str([size(img.pixelData), 1]);
+else
+  img.metaData.sizes=num2str(size(img.pixelData));
+end
 
 if isfield(img,'ijkToLpsTransform')
   % Write zero-based IJK transform (origin is at [0,0,0]) to the image header
