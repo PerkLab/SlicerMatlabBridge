@@ -18,7 +18,6 @@
 // Qt includes
 #include <QDebug> 
 #include <QDir>
-#include <QtPlugin>
 #include <QSettings> 
 
 // VTK includes
@@ -48,7 +47,11 @@ const std::string MATLAB_COMMAND_SERVER_SCRIPT_NAME="cli_commandserver.m";
 #endif
 
 //-----------------------------------------------------------------------------
+
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+#include <QtPlugin>
 Q_EXPORT_PLUGIN2(qSlicerMatlabModuleGeneratorModule, qSlicerMatlabModuleGeneratorModule);
+#endif
 
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
