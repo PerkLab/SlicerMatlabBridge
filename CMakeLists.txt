@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.5)
 
 project(MatlabBridge)
 
@@ -18,6 +18,7 @@ set(EXTENSION_CONTRIBUTORS "Andras Lasso (PerkLab, Queen's University), Jean-Chr
 set(EXTENSION_DESCRIPTION "The Matlab Bridge extension allows running Matlab scripts as command-line interface (CLI) modules directly from 3D Slicer. The only prerequisites for running Matlab scripts are having this extension and Matlab installed on the 3D Slicer computer (building of 3D Slicer, MEX files, etc. is not needed). Extension version: ${MATLABBRIDGE_VERSION}.")
 set(EXTENSION_ICONURL "http://www.slicer.org/slicerWiki/images/e/e8/MatlabBridgeLogo.png")
 set(EXTENSION_SCREENSHOTURLS "http://www.slicer.org/slicerWiki/images/2/2f/MatlabBridgeScreenshot1.png http://www.slicer.org/slicerWiki/images/1/16/MatlabBridgeScreenshot2.png http://www.slicer.org/slicerWiki/images/b/b9/MatlabBridgeScreenshot3.png")
+set(EXTENSION_DEPENDS SlicerOpenIGTLink)
 
 #-----------------------------------------------------------------------------
 find_package(Slicer REQUIRED)

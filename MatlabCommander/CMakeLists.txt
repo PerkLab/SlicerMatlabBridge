@@ -1,17 +1,13 @@
 #-----------------------------------------------------------------------------
 set(MODULE_NAME MatlabCommander)
 
-find_package(OpenIGTLink QUIET PATHS ${OpenIGTLink_DIR} )
-if(NOT OpenIGTLink_FOUND)
-  message("OpenIGTLink library is not found. The ${MODULE_NAME} module will not be built.")
-  return()
-endif() 
+find_package(OpenIGTLink REQUIRED)
 
 include(${OpenIGTLink_USE_FILE})
 
 #-----------------------------------------------------------------------------
 set(MODULE_INCLUDE_DIRECTORIES
-  ${OpenIGTLink_INCLUDE_DIRS}  
+  ${OpenIGTLink_INCLUDE_DIRS}
   )
 
 set(MODULE_SRCS
