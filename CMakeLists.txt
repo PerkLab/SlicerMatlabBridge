@@ -29,4 +29,5 @@ add_subdirectory(MatlabCommander)
 add_subdirectory(MatlabModuleGenerator )
 
 #-----------------------------------------------------------------------------
+include(${Slicer_EXTENSION_GENERATE_CONFIG})
 include(${Slicer_EXTENSION_CPACK})
