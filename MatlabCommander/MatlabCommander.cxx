@@ -38,10 +38,15 @@ std::string ReceiveString(igtl::Socket * socket, igtl::MessageHeader::Pointer& h
   stringMsg->AllocatePack();
 
   // Receive transform data from the socket
-  int received=socket->Receive(stringMsg->GetPackBodyPointer(), stringMsg->GetPackBodySize());
+  bool receiveTimedOut = false;
+  int received=socket->Receive(stringMsg->GetPackBodyPointer(), stringMsg->GetPackBodySize(), receiveTimedOut);
   if (received!=stringMsg->GetPackBodySize())
   {
     std::cerr << "WARNING: failed to receive complete message body" << std::endl;
+  }
+  if (receiveTimedOut)
+  {
+    std::cerr << "WARNING: receiving timed out" << std::endl;
   }
 
   // Deserialize the transform data
@@ -271,14 +276,16 @@ ExecuteMatlabCommandStatus ExecuteMatlabCommand(const std::string& hostname, int
   {
     socket->SetReceiveTimeout(receiveTimeoutMsec); // timeout in msec
   }
-  int receivedBytes = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+
+  bool receiveTimedOut = false;
+  int receivedBytes = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize(), receiveTimedOut);
   if (receivedBytes == 0)
   {
     reply="No reply";
     socket->CloseSocket();
     return COMMAND_STATUS_FAILED;
   }
-  if (receivedBytes != headerMsg->GetPackSize())
+  if (receivedBytes != headerMsg->GetPackSize() || receiveTimedOut)
   {
     reply = "Bad reply";
     socket->CloseSocket();
